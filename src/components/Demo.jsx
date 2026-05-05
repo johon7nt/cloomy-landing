@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useInView } from '../hooks/useInView'
 
 const INPUT_CLASS = "w-full bg-bg-elevated border border-white/10 rounded-xl px-4 py-3 text-white placeholder-text-tertiary text-sm focus:outline-none focus:border-brand-500/60 transition-colors"
 
@@ -9,16 +10,72 @@ const STEPS = [
   { id: 4, label: 'Listo' },
 ]
 
-const MENU_ITEMS = [
-  { name: 'Café cortado', price: '$1.800' },
-  { name: 'Tostado mixto', price: '$4.200' },
-  { name: 'Medialuna', price: '$900' },
+const FORMATS = [
+  { value: 'gastro',  label: 'Gastronomía' },
+  { value: 'tienda',  label: 'Tienda online' },
+  { value: 'feria',   label: 'Feria / stand' },
+  { value: 'evento',  label: 'Evento' },
 ]
+
+const FORMAT_CONTENT = {
+  gastro: {
+    section: 'MENÚ',
+    banner: 'Pedí desde la mesa',
+    items: [
+      { name: 'Café cortado',  price: '$1.800' },
+      { name: 'Tostado mixto', price: '$4.200' },
+      { name: 'Medialuna',     price: '$900'   },
+    ],
+  },
+  tienda: {
+    section: 'PRODUCTOS',
+    banner: 'Envíos a todo el país',
+    items: [
+      { name: 'Camiseta negra M', price: '$18.500' },
+      { name: 'Jean slim azul',   price: '$34.900' },
+      { name: 'Gorra bordada',    price: '$12.000' },
+    ],
+  },
+  feria: {
+    section: 'CATÁLOGO',
+    banner: 'Escaneá y pedí',
+    items: [
+      { name: 'Taza cerámica',     price: '$9.500'  },
+      { name: 'Bowl artesanal',    price: '$14.000' },
+      { name: 'Plato decorativo',  price: '$11.200' },
+    ],
+  },
+  evento: {
+    section: 'ENTRADAS',
+    banner: 'Comprá tu entrada',
+    items: [
+      { name: 'General',   price: '$8.000'  },
+      { name: 'VIP',       price: '$22.000' },
+      { name: 'Mesa x4',   price: '$60.000' },
+    ],
+  },
+}
 
 export default function Demo() {
   const [currentStep, setCurrentStep] = useState(1)
   const [businessName, setBusinessName] = useState('')
+  const [format, setFormat] = useState('gastro')
+  const [itemsVisible, setItemsVisible] = useState(true)
+  const [accentColor, setAccentColor] = useState('#6C47FF')
   const displayName = businessName || 'Tu negocio'
+  const [headingRef, headingInView] = useInView(0.2)
+  const [leftRef, leftInView] = useInView(0.1)
+  const [rightRef, rightInView] = useInView(0.1)
+
+  const content = FORMAT_CONTENT[format]
+
+  const handleFormatChange = (val) => {
+    setItemsVisible(false)
+    setTimeout(() => {
+      setFormat(val)
+      setItemsVisible(true)
+    }, 200)
+  }
 
   const handleNext = () => {
     if (currentStep < 4) setCurrentStep((s) => s + 1)
@@ -27,12 +84,14 @@ export default function Demo() {
   return (
     <section id="demo" className="section-divider py-20 lg:py-28">
       <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-4xl lg:text-5xl font-black text-white mb-3">
-          Probá el alta acá.
-        </h2>
-        <p className="text-text-secondary text-lg mb-10">
-          Así de fácil arma su tienda un merchant en Cloomy.
-        </p>
+        <div ref={headingRef} className={`reveal ${headingInView ? 'in-view' : ''}`}>
+          <h2 className="text-4xl lg:text-5xl font-black text-white mb-3">
+            Probá el alta acá.
+          </h2>
+          <p className="text-text-secondary text-lg mb-10">
+            Así de fácil arma su tienda un merchant en Cloomy.
+          </p>
+        </div>
 
         {/* Container with glow border */}
         <div
@@ -44,7 +103,11 @@ export default function Demo() {
         >
           <div className="grid lg:grid-cols-2 min-h-[500px]">
             {/* Left: wizard */}
-            <div className="bg-bg-card p-8 lg:p-10 flex flex-col">
+            <div
+              ref={leftRef}
+              className={`bg-bg-card p-8 lg:p-10 flex flex-col reveal-left ${leftInView ? 'in-view' : ''}`}
+              style={{ transitionDelay: '0.1s' }}
+            >
               {/* Step indicators */}
               <div className="flex items-center gap-1 mb-8 flex-wrap">
                 {STEPS.map((step, i) => (
@@ -104,11 +167,14 @@ export default function Demo() {
                     </div>
                     <div>
                       <label className="block text-sm text-text-secondary mb-1.5">Formato</label>
-                      <select className={INPUT_CLASS}>
-                        <option>Gastronomía</option>
-                        <option>Tienda online</option>
-                        <option>Feria / stand</option>
-                        <option>Evento</option>
+                      <select
+                        className={INPUT_CLASS}
+                        value={format}
+                        onChange={(e) => handleFormatChange(e.target.value)}
+                      >
+                        {FORMATS.map((f) => (
+                          <option key={f.value} value={f.value}>{f.label}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -121,8 +187,15 @@ export default function Demo() {
                       {['#6C47FF', '#FF453A', '#FFB340', '#00C853', '#0A84FF', '#FF6B6B'].map((color) => (
                         <button
                           key={color}
-                          className="w-10 h-10 rounded-xl border-2 border-white/20 hover:scale-110 transition-transform"
-                          style={{ backgroundColor: color }}
+                          onClick={() => setAccentColor(color)}
+                          className="w-10 h-10 rounded-xl transition-all duration-200 hover:scale-110"
+                          style={{
+                            backgroundColor: color,
+                            border: accentColor === color
+                              ? '3px solid white'
+                              : '2px solid rgba(255,255,255,0.2)',
+                            transform: accentColor === color ? 'scale(1.15)' : undefined,
+                          }}
                         />
                       ))}
                     </div>
@@ -152,7 +225,11 @@ export default function Demo() {
             </div>
 
             {/* Right: live preview */}
-            <div className="bg-bg-elevated border-t lg:border-t-0 lg:border-l border-brand-500/20 p-8 lg:p-10 flex flex-col items-center justify-center">
+            <div
+              ref={rightRef}
+              className={`bg-bg-elevated border-t lg:border-t-0 lg:border-l border-brand-500/20 p-8 lg:p-10 flex flex-col items-center justify-center reveal-right ${rightInView ? 'in-view' : ''}`}
+              style={{ transitionDelay: '0.2s' }}
+            >
               <div className="flex items-center gap-2 mb-6 self-start">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 <span className="text-xs font-bold tracking-widest text-text-secondary uppercase">
@@ -173,7 +250,7 @@ export default function Demo() {
 
                 {/* App header */}
                 <div className="flex items-center gap-2 px-4 py-2 border-b border-white/5">
-                  <div className="w-7 h-7 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold">
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: accentColor }}>
                     {displayName.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -183,27 +260,34 @@ export default function Demo() {
                 </div>
 
                 {/* Banner */}
-                <div className="mx-3 mt-2 rounded-xl h-14 bg-brand-500/40 flex items-center justify-center">
-                  <span className="text-white text-[10px] font-semibold">Pedí desde la mesa</span>
+                <div className="mx-3 mt-2 rounded-xl h-14 flex items-center justify-center" style={{ backgroundColor: `${accentColor}66` }}>
+                  <span className="text-white text-[10px] font-semibold">{content.banner}</span>
                 </div>
 
-                {/* Menu */}
+                {/* Items */}
                 <div className="px-3 mt-3">
-                  <span className="text-text-tertiary text-[9px] font-bold tracking-widest uppercase">MENÚ</span>
+                  <span className="text-text-tertiary text-[9px] font-bold tracking-widest uppercase">
+                    {content.section}
+                  </span>
                   <div className="mt-2 space-y-1.5">
-                    {MENU_ITEMS.map((item) => (
+                    {content.items.map((item, i) => (
                       <div
-                        key={item.name}
+                        key={`${format}-${item.name}`}
                         className="flex items-center justify-between bg-white/5 rounded-xl px-3 py-2"
+                        style={{
+                          opacity: itemsVisible ? 1 : 0,
+                          transform: itemsVisible ? 'translateY(0)' : 'translateY(6px)',
+                          transition: `opacity 0.25s ease ${i * 60}ms, transform 0.25s ease ${i * 60}ms`,
+                        }}
                       >
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-lg bg-brand-500/30" />
+                          <div className="w-6 h-6 rounded-lg" style={{ backgroundColor: `${accentColor}4d` }} />
                           <div>
                             <div className="text-white text-[10px] font-medium">{item.name}</div>
                             <div className="text-text-tertiary text-[9px]">{item.price}</div>
                           </div>
                         </div>
-                        <div className="w-6 h-6 rounded-lg bg-brand-500 flex items-center justify-center text-white text-xs">
+                        <div className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs" style={{ backgroundColor: accentColor }}>
                           +
                         </div>
                       </div>

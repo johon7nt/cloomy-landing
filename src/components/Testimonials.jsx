@@ -1,3 +1,5 @@
+import { useInView } from '../hooks/useInView'
+
 const TESTIMONIALS = [
   {
     quote:
@@ -13,7 +15,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      'Antes pagaba 8% de comisión en otra plataforma. Acá pago un plan fijo y vendo más.',
+      'Antes pagaba 8% de comisión en otra app. Acá pago un plan fijo y vendo más.',
     name: 'Sofía B.',
     business: 'Tienda Norte, Córdoba',
   },
@@ -31,29 +33,40 @@ function QuoteIcon({ className = '' }) {
   )
 }
 
+function TestimonialCard({ t, index }) {
+  const [ref, inView] = useInView(0.15)
+  return (
+    <div
+      ref={ref}
+      className={`card-base p-8 flex flex-col reveal ${inView ? 'in-view' : ''}`}
+      style={{ transitionDelay: `${index * 120}ms` }}
+    >
+      <QuoteIcon className="text-brand-500 mb-5" />
+      <p className="text-white text-base leading-relaxed flex-1 mb-6">{t.quote}</p>
+      <div>
+        <div className="text-white font-semibold text-sm">— {t.name}</div>
+        <div className="text-text-tertiary text-xs mt-0.5">{t.business}</div>
+      </div>
+    </div>
+  )
+}
+
 export default function Testimonials() {
+  const [headingRef, headingInView] = useInView(0.2)
+
   return (
     <section id="testimonials" className="section-divider py-20 lg:py-28">
       <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-4xl lg:text-5xl font-black text-white mb-12">
+        <h2
+          ref={headingRef}
+          className={`text-4xl lg:text-5xl font-black text-white mb-12 reveal ${headingInView ? 'in-view' : ''}`}
+        >
           Lo que dicen los que ya están adentro.
         </h2>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {TESTIMONIALS.map((t) => (
-            <div
-              key={t.name}
-              className="card-base p-8 flex flex-col"
-            >
-              <QuoteIcon className="text-brand-500 mb-5" />
-              <p className="text-white text-base leading-relaxed flex-1 mb-6">
-                {t.quote}
-              </p>
-              <div>
-                <div className="text-white font-semibold text-sm">— {t.name}</div>
-                <div className="text-text-tertiary text-xs mt-0.5">{t.business}</div>
-              </div>
-            </div>
+          {TESTIMONIALS.map((t, i) => (
+            <TestimonialCard key={t.name} t={t} index={i} />
           ))}
         </div>
       </div>

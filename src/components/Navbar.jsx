@@ -7,7 +7,7 @@ const NAV_LINKS = [
   { label: 'Precios', href: '#pricing' },
 ]
 
-export default function Navbar() {
+export default function Navbar({ visible = true }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -22,9 +22,20 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-bg-page/95 backdrop-blur-md border-b border-brand-500/10' : 'bg-transparent'
-      }`}
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        background: scrolled
+          ? 'rgba(10, 10, 20, 0.75)'
+          : 'rgba(10, 10, 20, 0.35)',
+        borderBottom: scrolled
+          ? '1px solid rgba(108, 71, 255, 0.15)'
+          : '1px solid transparent',
+        opacity: visible ? 1 : 0,
+        pointerEvents: visible ? 'auto' : 'none',
+        transition: 'opacity 0.4s ease-out, background 0.3s, border-color 0.3s',
+      }}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2 shrink-0">

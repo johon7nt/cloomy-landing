@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useInView } from '../hooks/useInView'
 
 const PLANS = [
   {
@@ -61,13 +62,90 @@ function CheckIcon() {
   )
 }
 
+function PlanCard({ plan, billing, index }) {
+  const [ref, inView] = useInView(0.15)
+  return (
+    <div
+      ref={ref}
+      className={`rounded-2xl p-8 flex flex-col reveal ${inView ? 'in-view' : ''}`}
+      style={{
+        transitionDelay: `${index * 120}ms`,
+        background: plan.highlight
+          ? 'rgba(108,71,255,0.18)'
+          : 'rgba(255,255,255,0.06)',
+        border: plan.highlight
+          ? '1px solid rgba(108,71,255,0.5)'
+          : '1px solid rgba(255,255,255,0.08)',
+        boxShadow: plan.highlight
+          ? '0 8px 32px rgba(108,71,255,0.2), 0 2px 8px rgba(0,0,0,0.3)'
+          : '0 1px 3px rgba(0,0,0,0.2)',
+      }}
+    >
+      <div className="mb-6">
+        <h3 className="text-xl font-black mb-1 text-white">{plan.name}</h3>
+        <p className={`text-sm ${plan.highlight ? 'text-white/80' : 'text-text-secondary'}`}>
+          {plan.description}
+        </p>
+
+        <div className="mt-4">
+          {billing === 'anual' && plan.price.mensual !== '$0' && (
+            <p className={`text-sm line-through mb-1 ${plan.highlight ? 'text-white/50' : 'text-text-secondary/60'}`}>
+              {plan.price.mensual}<span className="text-xs">/mes</span>
+            </p>
+          )}
+          <div className="flex items-end gap-1">
+            <span className="text-4xl lg:text-5xl font-black leading-none">
+              {plan.price[billing]}
+            </span>
+            <span className={`text-sm mb-1 ${plan.highlight ? 'text-white/70' : 'text-text-secondary'}`}>
+              {plan.period}
+            </span>
+          </div>
+          {billing === 'anual' && plan.price.mensual !== '$0' && (
+            <p className={`text-xs mt-1.5 font-medium ${plan.highlight ? 'text-white/70' : 'text-brand-400'}`}>
+              Pagás {plan.price.anual} × 12 al año
+            </p>
+          )}
+        </div>
+      </div>
+
+      <button
+        className={`w-full rounded-xl py-3 font-semibold text-sm transition-all duration-200 mb-8 ${
+          plan.highlight
+            ? 'bg-brand-500 text-white hover:bg-brand-600'
+            : 'border border-white/20 text-white hover:bg-white/5'
+        }`}
+      >
+        {plan.cta} →
+      </button>
+
+      <ul className="space-y-3">
+        {plan.features.map((f) => (
+          <li key={f} className="flex items-start gap-2.5">
+            <span className={plan.highlight ? 'text-white' : 'text-brand-500'}>
+              <CheckIcon />
+            </span>
+            <span className={`text-sm ${plan.highlight ? 'text-white/90' : 'text-text-secondary'}`}>
+              {f}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export default function Pricing() {
   const [billing, setBilling] = useState('mensual')
+  const [headingRef, headingInView] = useInView(0.2)
 
   return (
     <section id="pricing" className="section-divider py-20 lg:py-28">
       <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-4xl lg:text-5xl font-black text-white mb-8">
+        <h2
+          ref={headingRef}
+          className={`text-4xl lg:text-5xl font-black text-white mb-8 reveal ${headingInView ? 'in-view' : ''}`}
+        >
           Pagás un plan,{' '}
           <span className="text-text-secondary">no una comisión.</span>
         </h2>
@@ -92,57 +170,8 @@ export default function Pricing() {
 
         {/* Cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-          {PLANS.map((plan) => (
-            <div
-              key={plan.id}
-              className={`rounded-2xl p-8 flex flex-col ${
-                plan.highlight
-                  ? 'bg-brand-500 text-white'
-                  : 'bg-bg-card border border-brand-500/30 text-white'
-              }`}
-            >
-              <div className="mb-6">
-                <h3 className={`text-xl font-black mb-1 ${plan.highlight ? 'text-white' : 'text-white'}`}>
-                  {plan.name}
-                </h3>
-                <div className="flex items-end gap-1 mt-2">
-                  <span className="text-4xl lg:text-5xl font-black leading-none">
-                    {plan.price[billing]}
-                  </span>
-                  <span className={`text-sm mb-1 ${plan.highlight ? 'text-white/70' : 'text-text-secondary'}`}>
-                    {plan.period}
-                  </span>
-                </div>
-                <p className={`text-sm mt-3 ${plan.highlight ? 'text-white/80' : 'text-text-secondary'}`}>
-                  {plan.description}
-                </p>
-              </div>
-
-              <button
-                className={`w-full rounded-xl py-3 font-semibold text-sm transition-all duration-200 mb-8 ${
-                  plan.ctaStyle === 'solid-white'
-                    ? 'bg-white text-brand-500 hover:bg-white/90'
-                    : plan.ctaStyle === 'outline-white'
-                    ? 'border border-white/40 text-white hover:bg-white/10'
-                    : 'border border-white/30 text-white hover:bg-white/5'
-                }`}
-              >
-                {plan.cta} →
-              </button>
-
-              <ul className="space-y-3">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5">
-                    <span className={plan.highlight ? 'text-white' : 'text-brand-500'}>
-                      <CheckIcon />
-                    </span>
-                    <span className={`text-sm ${plan.highlight ? 'text-white/90' : 'text-text-secondary'}`}>
-                      {f}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {PLANS.map((plan, i) => (
+            <PlanCard key={plan.id} plan={plan} billing={billing} index={i} />
           ))}
         </div>
       </div>

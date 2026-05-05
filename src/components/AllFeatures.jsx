@@ -1,3 +1,5 @@
+import { useInView } from '../hooks/useInView'
+
 const FEATURES = [
   {
     icon: (
@@ -55,30 +57,42 @@ const FEATURES = [
   },
 ]
 
+function FeatureCell({ feature, index }) {
+  const [ref, inView] = useInView(0.15)
+  return (
+    <div
+      ref={ref}
+      className={`bg-bg-card p-8 hover:bg-bg-elevated transition-colors duration-300 group reveal ${inView ? 'in-view' : ''}`}
+      style={{ transitionDelay: `${index * 80}ms` }}
+    >
+      <div className="w-10 h-10 rounded-xl bg-brand-500/15 flex items-center justify-center text-brand-500 mb-5 group-hover:bg-brand-500/25 transition-colors duration-300">
+        {feature.icon}
+      </div>
+      <h3 className="text-white font-bold text-lg mb-2">{feature.title}</h3>
+      <p className="text-text-secondary text-sm leading-relaxed">{feature.desc}</p>
+    </div>
+  )
+}
+
 export default function AllFeatures() {
+  const [headingRef, headingInView] = useInView(0.2)
+
   return (
     <section id="all-features" className="section-divider py-20 lg:py-28">
       <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-4xl lg:text-5xl font-black text-white mb-4 max-w-2xl leading-tight">
-          Todo lo que necesitás.{' '}
-          <span className="text-text-secondary">Nada que sobre.</span>
-        </h2>
-        <p className="text-text-secondary text-lg mb-12">
-          Cada función tiene un motivo real. Sin bloat.
-        </p>
+        <div ref={headingRef} className={`reveal ${headingInView ? 'in-view' : ''}`}>
+          <h2 className="text-4xl lg:text-5xl font-black text-white mb-4 max-w-2xl leading-tight">
+            Todo lo que necesitás.{' '}
+            <span className="text-text-secondary">Nada que sobre.</span>
+          </h2>
+          <p className="text-text-secondary text-lg mb-12">
+            Cada función tiene un motivo real. Sin bloat.
+          </p>
+        </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-brand-500/20 rounded-2xl overflow-hidden border border-brand-500/20">
-          {FEATURES.map((feature) => (
-            <div
-              key={feature.title}
-              className="bg-bg-card p-8 hover:bg-bg-elevated transition-colors duration-300 group"
-            >
-              <div className="w-10 h-10 rounded-xl bg-brand-500/15 flex items-center justify-center text-brand-500 mb-5 group-hover:bg-brand-500/25 transition-colors duration-300">
-                {feature.icon}
-              </div>
-              <h3 className="text-white font-bold text-lg mb-2">{feature.title}</h3>
-              <p className="text-text-secondary text-sm leading-relaxed">{feature.desc}</p>
-            </div>
+          {FEATURES.map((feature, i) => (
+            <FeatureCell key={feature.title} feature={feature} index={i} />
           ))}
         </div>
       </div>

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useInView } from '../hooks/useInView'
 
 const TABS = [
   {
@@ -57,27 +58,50 @@ label: 'NUEVA ENTRADA · EVENTO',
 
 export default function Features() {
   const [active, setActive] = useState('gastro')
+  const [visible, setVisible] = useState(true)
   const tab = TABS.find((t) => t.id === active)
+  const [headingRef, headingInView] = useInView(0.2)
+  const [tabsRef, tabsInView] = useInView(0.1)
+  const [cardRef, cardInView] = useInView(0.1)
+
+  const handleTabChange = (id) => {
+    if (id === active) return
+    setVisible(false)
+    setTimeout(() => {
+      setActive(id)
+      setVisible(true)
+    }, 180)
+  }
 
   return (
     <section id="features" className="section-divider py-20 lg:py-28">
       <div className="max-w-6xl mx-auto px-6">
+
         {/* Heading */}
-        <div className="mb-10">
+        <div ref={headingRef} className={`mb-10 reveal ${headingInView ? 'in-view' : ''}`}>
+          <p className="text-brand-400 text-sm font-semibold tracking-widest uppercase mb-3">
+            ¿Qué ofrecemos?
+          </p>
           <h2 className="text-4xl lg:text-5xl font-black text-white mb-3">
             No sos sólo una tienda online.
           </h2>
-          <p className="text-text-secondary text-lg">
-            Cloomy se adapta al formato de tu negocio.
+          <p className="text-text-secondary text-lg max-w-2xl">
+            Cloomy es una plataforma que te permite crear tu presencia digital en minutos: tienda online, menú con QR para tu local, catálogo para ferias o página de eventos.{' '}
+            <mark className="highlight-brand text-white not-italic">Sin comisiones por venta</mark>
+            , sin letra chica, sin técnicos.
           </p>
         </div>
 
         {/* Tab switcher */}
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div
+          ref={tabsRef}
+          className={`flex flex-wrap gap-2 mb-8 reveal ${tabsInView ? 'in-view' : ''}`}
+          style={{ transitionDelay: '0.1s' }}
+        >
           {TABS.map((t) => (
             <button
               key={t.id}
-              onClick={() => setActive(t.id)}
+              onClick={() => handleTabChange(t.id)}
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                 active === t.id
                   ? 'bg-brand-500 text-white'
@@ -90,7 +114,11 @@ export default function Features() {
         </div>
 
         {/* Content card */}
-        <div className="border border-brand-500/40 rounded-2xl bg-bg-card overflow-hidden">
+        <div
+          ref={cardRef}
+          className={`border border-brand-500/40 rounded-2xl bg-bg-card overflow-hidden reveal ${cardInView ? 'in-view' : ''}`}
+          style={{ transitionDelay: '0.2s' }}
+        >
           <div className="grid lg:grid-cols-2 gap-0">
             {/* Left: text */}
             <div className="p-8 lg:p-10">
@@ -122,7 +150,14 @@ export default function Features() {
               </div>
 
               {/* Notification card */}
-              <div className="bg-bg-elevated border border-white/10 rounded-2xl p-5 w-full max-w-[260px] shadow-brand-glow">
+              <div
+                className="bg-bg-elevated border border-white/10 rounded-2xl p-5 w-full max-w-[260px] shadow-brand-glow"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? 'translateY(0) scale(1)' : 'translateY(10px) scale(0.97)',
+                  transition: 'opacity 0.25s ease, transform 0.25s ease',
+                }}
+              >
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                   <span className="text-[11px] font-bold tracking-widest text-text-secondary uppercase">
