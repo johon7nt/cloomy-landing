@@ -95,7 +95,7 @@ export default function App() {
           <HowItWorks />
           <AllFeatures />
           <Demo />
-          <Testimonials />
+          {/* <Testimonials /> */}
           <Pricing />
           <FAQ />
         </main>

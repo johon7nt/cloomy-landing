@@ -1,4 +1,7 @@
+import { useEffect, useRef, useState } from 'react'
 import { useInView } from '../hooks/useInView'
+
+const TYPED_TEXT = 'En un solo lugar.'
 
 const FEATURES = [
   {
@@ -76,17 +79,48 @@ function FeatureCell({ feature, index }) {
 
 export default function AllFeatures() {
   const [headingRef, headingInView] = useInView(0.2)
+  const [typed, setTyped] = useState(0)
+  const [typingDone, setTypingDone] = useState(false)
+  const intervalRef = useRef(null)
+
+  useEffect(() => {
+    if (!headingInView || typingDone) return
+    const delay = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        setTyped(prev => {
+          const next = prev + 1
+          if (next >= TYPED_TEXT.length) {
+            clearInterval(intervalRef.current)
+            setTypingDone(true)
+          }
+          return next
+        })
+      }, 70)
+    }, 400)
+    return () => {
+      clearTimeout(delay)
+      clearInterval(intervalRef.current)
+    }
+  }, [headingInView])
 
   return (
     <section id="all-features" className="section-divider py-20 lg:py-28">
       <div className="max-w-6xl mx-auto px-6">
         <div ref={headingRef} className={`reveal ${headingInView ? 'in-view' : ''}`}>
           <h2 className="text-4xl lg:text-5xl font-black text-white mb-4 max-w-2xl leading-tight">
-            Todo lo que necesitás.{' '}
-            <span className="text-text-secondary">Nada que sobre.</span>
+            Todo lo que necesitás.
+            <span className="block mt-2">
+              {typed > 0 && (
+                <mark className="highlight-brand text-white not-italic">
+                  {TYPED_TEXT.slice(0, typed)}
+                </mark>
+              )}
+              {!typingDone && <span className="cursor-blink" aria-hidden />}
+            </span>
           </h2>
+          <br></br>
           <p className="text-text-secondary text-lg mb-12">
-            Cada función tiene un motivo real. Sin bloat.
+            Cada función tiene un motivo real.
           </p>
         </div>
 

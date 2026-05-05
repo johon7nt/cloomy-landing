@@ -141,7 +141,8 @@ export default function FAQ() {
           </div>
 
           {/* Right — illustration panel (desktop only) */}
-          <div className="hidden lg:flex items-center justify-center sticky top-32">
+          <div className="hidden lg:block self-start sticky top-32">
+          <div className="flex items-center justify-center">
             <div
               className="relative w-full max-w-xs aspect-square rounded-3xl overflow-hidden"
               style={{
@@ -182,6 +183,7 @@ export default function FAQ() {
               ))}
             </div>
           </div>
+          </div>{/* end sticky wrapper */}
         </div>
       </div>
     </section>

@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useInView } from '../hooks/useInView'
+
+const TYPED_TEXT = 'no una comisión.'
 
 const PLANS = [
   {
@@ -23,7 +25,7 @@ const PLANS = [
     name: 'Basic',
     price: { mensual: '$12.000', anual: '$9.600' },
     period: '/mes',
-    description: 'Para negocios chicos que recién arrancan.',
+    description: 'Para negocios que recién arrancan.',
     cta: 'Elegir Basic',
     ctaStyle: 'outline-white',
     features: [
@@ -110,11 +112,14 @@ function PlanCard({ plan, billing, index }) {
       </div>
 
       <button
-        className={`w-full rounded-xl py-3 font-semibold text-sm transition-all duration-200 mb-8 ${
+        className={`w-full rounded-xl py-3 font-semibold text-sm mb-8 ${
           plan.highlight
             ? 'bg-brand-500 text-white hover:bg-brand-600'
-            : 'border border-white/20 text-white hover:bg-white/5'
+            : 'border border-white/20 text-white hover:border-brand-500/70 hover:bg-brand-500/10'
         }`}
+        style={{ transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s' }}
+        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 22px rgba(108,71,255,0.45)' }}
+        onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
       >
         {plan.cta} →
       </button>
@@ -136,34 +141,96 @@ function PlanCard({ plan, billing, index }) {
 }
 
 export default function Pricing() {
-  const [billing, setBilling] = useState('mensual')
+  const [billing, setBilling] = useState('anual')
   const [headingRef, headingInView] = useInView(0.2)
+  const [typed, setTyped] = useState(0)
+  const [typingDone, setTypingDone] = useState(false)
+  const intervalRef = useRef(null)
+
+  useEffect(() => {
+    if (!headingInView || typingDone) return
+    const delay = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        setTyped(prev => {
+          const next = prev + 1
+          if (next >= TYPED_TEXT.length) {
+            clearInterval(intervalRef.current)
+            setTypingDone(true)
+          }
+          return next
+        })
+      }, 70)
+    }, 400)
+    return () => {
+      clearTimeout(delay)
+      clearInterval(intervalRef.current)
+    }
+  }, [headingInView])
 
   return (
     <section id="pricing" className="section-divider py-20 lg:py-28">
       <div className="max-w-6xl mx-auto px-6">
         <h2
           ref={headingRef}
-          className={`text-4xl lg:text-5xl font-black text-white mb-8 reveal ${headingInView ? 'in-view' : ''}`}
+          className={`text-4xl lg:text-5xl font-black text-white mb-8 leading-snug reveal ${headingInView ? 'in-view' : ''}`}
         >
           Pagás un plan,{' '}
-          <span className="text-text-secondary">no una comisión.</span>
+          <span className="block mt-4">
+            {typed > 0 && (
+              <mark className="highlight-brand text-white not-italic">
+                {TYPED_TEXT.slice(0, typed)}
+              </mark>
+            )}
+            {!typingDone && <span className="cursor-blink" aria-hidden />}
+          </span>
         </h2>
 
         {/* Toggle */}
-        <div className="inline-flex border border-white/20 rounded-xl p-1 mb-12">
+        <div
+          className="inline-flex rounded-xl p-1 mb-12 relative"
+          style={{
+            background: 'rgba(255,255,255,0.06)',
+            border: billing === 'anual'
+              ? '1px solid rgba(108,71,255,0.5)'
+              : '1px solid rgba(255,255,255,0.15)',
+            boxShadow: billing === 'anual'
+              ? '0 0 18px rgba(108,71,255,0.35)'
+              : 'none',
+            transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+          }}
+        >
           {['mensual', 'anual'].map((b) => (
             <button
               key={b}
               onClick={() => setBilling(b)}
-              className={`px-5 py-2 rounded-lg text-sm font-semibold capitalize transition-all duration-200 ${
-                billing === b ? 'bg-white text-bg-page' : 'text-text-secondary hover:text-white'
-              }`}
+              className="relative px-5 py-2 rounded-lg text-sm font-semibold capitalize z-10 transition-colors duration-300"
+              style={{
+                color: billing === b ? (b === 'anual' ? '#fff' : '#0a0a14') : 'rgba(255,255,255,0.45)',
+              }}
             >
-              {b}
-              {b === 'anual' && (
-                <span className="ml-1.5 text-[10px] text-brand-500 font-bold uppercase">−20%</span>
+              {billing === b && (
+                <span
+                  className="absolute inset-0 rounded-lg"
+                  style={{
+                    background: b === 'anual'
+                      ? 'linear-gradient(135deg, #7C5CFF 0%, #6C47FF 100%)'
+                      : '#ffffff',
+                    boxShadow: b === 'anual' ? '0 0 12px rgba(108,71,255,0.6)' : 'none',
+                    transition: 'background 0.3s ease, box-shadow 0.3s ease',
+                  }}
+                />
               )}
+              <span className="relative z-10 flex items-center gap-1.5">
+                {b}
+                {b === 'anual' && (
+                  <span
+                    className="text-[10px] font-bold uppercase"
+                    style={{ color: billing === 'anual' ? 'rgba(255,255,255,0.85)' : 'rgba(108,71,255,0.8)' }}
+                  >
+                    −20%
+                  </span>
+                )}
+              </span>
             </button>
           ))}
         </div>

@@ -79,12 +79,13 @@ export default function Features() {
 
         {/* Heading */}
         <div ref={headingRef} className={`mb-10 reveal ${headingInView ? 'in-view' : ''}`}>
-          <p className="text-brand-400 text-sm font-semibold tracking-widest uppercase mb-3">
-            ¿Qué ofrecemos?
-          </p>
           <h2 className="text-4xl lg:text-5xl font-black text-white mb-3">
             No sos sólo una tienda online.
           </h2>
+          <br></br>
+          <p className="text-brand-400 text-sm font-semibold tracking-widest uppercase mb-3">
+            ¿Qué ofrecemos?
+          </p>
           <p className="text-text-secondary text-lg max-w-2xl">
             Cloomy es una plataforma que te permite crear tu presencia digital en minutos: tienda online, menú con QR para tu local, catálogo para ferias o página de eventos.{' '}
             <mark className="highlight-brand text-white not-italic">Sin comisiones por venta</mark>
