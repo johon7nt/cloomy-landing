@@ -107,13 +107,14 @@ function useEyeTracking(svgRef, config) {
   return offset
 }
 
-function LogoSVG({ config, pupilPath, className, children }) {
+function LogoSVG({ config, pupilPath, className, staticEye = false, children }) {
   const svgRef = useRef(null)
-  const pupilOffset = useEyeTracking(svgRef, config)
+  const trackedOffset = useEyeTracking(staticEye ? { current: null } : svgRef, config)
+  const pupilOffset = staticEye ? { x: 0, y: 0 } : trackedOffset
 
   return (
     <svg
-      ref={svgRef}
+      ref={staticEye ? undefined : svgRef}
       viewBox={config.viewBox}
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +124,7 @@ function LogoSVG({ config, pupilPath, className, children }) {
       {children}
       <g
         transform={`translate(${pupilOffset.x}, ${pupilOffset.y})`}
-        style={{ transition: 'transform 0.12s ease-out' }}
+        style={staticEye ? undefined : { transition: 'transform 0.12s ease-out' }}
       >
         <path d={pupilPath} />
       </g>
@@ -131,9 +132,9 @@ function LogoSVG({ config, pupilPath, className, children }) {
   )
 }
 
-function LogoA({ className }) {
+function LogoA({ className, staticEye }) {
   return (
-    <LogoSVG config={LOGO_A} pupilPath={A_PUPIL} className={className}>
+    <LogoSVG config={LOGO_A} pupilPath={A_PUPIL} className={className} staticEye={staticEye}>
       <path d={A_C} fillRule="evenodd" />
       <path d={A_L} fillRule="evenodd" />
       <path d={A_EYE} fillRule="evenodd" />
@@ -146,9 +147,9 @@ function LogoA({ className }) {
   )
 }
 
-function LogoC({ className }) {
+function LogoC({ className, staticEye }) {
   return (
-    <LogoSVG config={LOGO_C} pupilPath={C_PUPIL} className={className}>
+    <LogoSVG config={LOGO_C} pupilPath={C_PUPIL} className={className} staticEye={staticEye}>
       <path d={C_TOP_EYE} fillRule="evenodd" />
       <path d={C_ACC1} />
       <path d={C_ACC2} />
@@ -163,9 +164,9 @@ function LogoC({ className }) {
   )
 }
 
-export default function Logo({ desktopClassName = 'h-9 w-auto', mobileClassName = 'h-12 w-auto' }) {
+export default function Logo({ desktopClassName = 'h-9 w-auto', mobileClassName = 'h-12 w-auto', staticEye = false }) {
   const isDesktop = useIsDesktop()
   return isDesktop
-    ? <LogoA className={`text-white ${desktopClassName}`} />
-    : <LogoC className={`text-white ${mobileClassName}`} />
+    ? <LogoA className={`text-white ${desktopClassName}`} staticEye={staticEye} />
+    : <LogoC className={`text-white ${mobileClassName}`} staticEye={staticEye} />
 }

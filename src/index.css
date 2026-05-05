@@ -102,6 +102,53 @@
     transform: translateX(0);
   }
 
+  /* ── HowItWorks floating words ── */
+
+  /* Tied to the section's view-timeline; plays as section scrolls through viewport */
+  @keyframes hiw-word-zoom {
+    0%   { transform: translateZ(-1000px); opacity: 0;    filter: blur(10px); }
+    50%  { transform: translateZ(0px);     opacity: 0.15; filter: blur(0px);  }
+    100% { transform: translateZ(1000px);  opacity: 0;    filter: blur(10px); }
+  }
+
+  /* Outer container — declares the named view-timeline */
+  .hiw-scroll-container {
+    view-timeline-name: --hiw-scroll;
+    view-timeline-axis: block;
+  }
+
+  /* 4×4 grid filling the sticky viewport, perspective for true 3D depth */
+  .hiw-words-grid {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    display: grid;
+    grid-template: repeat(4, 25vh) / repeat(4, 25vw);
+    place-items: center;
+  }
+
+  /* Base state: invisible. Only animated when scroll-timeline is supported. */
+  .hiw-word {
+    transform-style: preserve-3d;
+    font-size: 4vmin;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    color: white;
+    opacity: 0;
+    user-select: none;
+    will-change: transform, opacity, filter;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hiw-word {
+        animation: hiw-word-zoom linear both;
+        animation-timeline: --hiw-scroll;
+        animation-range: var(--word-range-start) var(--word-range-end);
+      }
+    }
+  }
+
   /* Blinking cursor for typewriter */
   @keyframes blink {
     0%, 100% { opacity: 1; }
