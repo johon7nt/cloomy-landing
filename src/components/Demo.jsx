@@ -54,6 +54,148 @@ const FORMAT_CONTENT = {
   },
 }
 
+const DEVICES = [
+  { id: 'mobile',   label: 'Mobile'   },
+  { id: 'tablet',   label: 'Tablet'   },
+  { id: 'notebook', label: 'Notebook' },
+  { id: 'monitor',  label: 'Monitor'  },
+]
+
+function StoreNarrow({ content, accentColor, displayName, clock, itemsVisible, format }) {
+  return (
+    <>
+      <div className="flex items-center justify-between px-5 py-2 text-white text-[10px]">
+        <span>{clock}</span><span>●●●</span>
+      </div>
+      <div className="flex items-center gap-2 px-4 py-2 border-b border-white/5">
+        <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: accentColor }}>
+          {displayName.charAt(0).toUpperCase()}
+        </div>
+        <div>
+          <div className="text-white text-xs font-semibold leading-none">{displayName}</div>
+          <div className="text-text-tertiary text-[9px] mt-0.5">cloomy.com/s/...</div>
+        </div>
+      </div>
+      <div className="mx-3 mt-2 rounded-xl h-12 flex items-center justify-center" style={{ backgroundColor: `${accentColor}66` }}>
+        <span className="text-white text-[10px] font-semibold">{content.banner}</span>
+      </div>
+      <div className="px-3 mt-3">
+        <span className="text-text-tertiary text-[9px] font-bold tracking-widest uppercase">{content.section}</span>
+        <div className="mt-2 space-y-1.5">
+          {content.items.map((item, i) => (
+            <div key={`${format}-${item.name}`} className="flex items-center justify-between bg-white/5 rounded-xl px-3 py-2"
+              style={{ opacity: itemsVisible ? 1 : 0, transform: itemsVisible ? 'translateY(0)' : 'translateY(6px)', transition: `opacity 0.25s ease ${i*60}ms, transform 0.25s ease ${i*60}ms` }}>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg" style={{ backgroundColor: `${accentColor}4d` }} />
+                <div>
+                  <div className="text-white text-[10px] font-medium">{item.name}</div>
+                  <div className="text-text-tertiary text-[9px]">{item.price}</div>
+                </div>
+              </div>
+              <div className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs" style={{ backgroundColor: accentColor }}>+</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  )
+}
+
+function StoreWide({ content, accentColor, displayName, itemsVisible, format }) {
+  return (
+    <div className="h-full flex flex-col">
+      <div className="flex items-center gap-2 px-4 py-2 border-b border-white/5" style={{ background: 'rgba(255,255,255,0.03)' }}>
+        <div className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[8px] font-bold shrink-0" style={{ backgroundColor: accentColor }}>
+          {displayName.charAt(0).toUpperCase()}
+        </div>
+        <span className="text-white text-[10px] font-bold">{displayName}</span>
+        <div className="flex gap-3 ml-auto">
+          {['Inicio', content.section, 'Contacto'].map(l => (
+            <span key={l} className="text-[8px] text-text-tertiary">{l}</span>
+          ))}
+        </div>
+      </div>
+      <div className="mx-3 mt-2 rounded-xl h-10 flex items-center justify-center" style={{ backgroundColor: `${accentColor}55` }}>
+        <span className="text-white text-[10px] font-semibold">{content.banner}</span>
+      </div>
+      <div className="px-3 mt-2">
+        <span className="text-[8px] text-text-tertiary font-bold tracking-widest uppercase">{content.section}</span>
+        <div className="mt-1.5 grid grid-cols-3 gap-1.5">
+          {content.items.map((item, i) => (
+            <div key={`${format}-${item.name}`} className="bg-white/5 rounded-xl p-2"
+              style={{ opacity: itemsVisible ? 1 : 0, transition: `opacity 0.25s ease ${i*60}ms` }}>
+              <div className="w-full h-9 rounded-lg mb-1.5" style={{ backgroundColor: `${accentColor}4d` }} />
+              <div className="text-white text-[9px] font-medium leading-tight">{item.name}</div>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-[8px] text-text-tertiary">{item.price}</span>
+                <div className="w-4 h-4 rounded flex items-center justify-center text-white text-[9px]" style={{ backgroundColor: accentColor }}>+</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function PhoneMockup({ children }) {
+  return (
+    <div className="relative w-[210px] h-[400px] rounded-[34px] border-2 border-white/10 overflow-hidden flex flex-col shadow-2xl" style={{ background: '#1A1A2E' }}>
+      {children}
+    </div>
+  )
+}
+
+function TabletMockup({ children }) {
+  return (
+    <div className="relative w-[300px] h-[400px] rounded-[22px] border-2 border-white/10 overflow-hidden flex flex-col shadow-2xl" style={{ background: '#1A1A2E' }}>
+      {children}
+    </div>
+  )
+}
+
+function NotebookMockup({ children }) {
+  return (
+    <div className="flex flex-col items-center select-none">
+      <div className="w-[420px] border-[6px] border-b-0 rounded-t-[10px] overflow-hidden" style={{ background: '#1A1A2E', borderColor: 'rgba(255,255,255,0.15)' }}>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 border-b border-white/5" style={{ background: 'rgba(255,255,255,0.04)' }}>
+          <span className="w-2 h-2 rounded-full" style={{ background: '#FF5F57' }} />
+          <span className="w-2 h-2 rounded-full" style={{ background: '#FEBC2E' }} />
+          <span className="w-2 h-2 rounded-full" style={{ background: '#28C840' }} />
+          <div className="flex-1 mx-3 px-2 py-0.5 rounded text-[8px] text-text-tertiary" style={{ background: 'rgba(255,255,255,0.07)' }}>
+            cloomy.com/s/tu-negocio
+          </div>
+        </div>
+        <div style={{ height: '230px', overflow: 'hidden' }}>{children}</div>
+      </div>
+      <div className="w-[460px] h-[14px] rounded-b-[10px] relative" style={{ background: 'rgba(255,255,255,0.1)' }}>
+        <div className="absolute top-[5px] left-1/2 -translate-x-1/2 w-14 h-[4px] rounded-full" style={{ background: 'rgba(255,255,255,0.2)' }} />
+      </div>
+      <div className="w-[490px] h-[5px] rounded-b-[3px]" style={{ background: 'rgba(255,255,255,0.06)' }} />
+    </div>
+  )
+}
+
+function MonitorMockup({ children }) {
+  return (
+    <div className="flex flex-col items-center select-none">
+      <div className="w-[440px] rounded-[10px] border-[6px] overflow-hidden" style={{ background: '#1A1A2E', borderColor: 'rgba(255,255,255,0.15)' }}>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 border-b border-white/5" style={{ background: 'rgba(255,255,255,0.04)' }}>
+          <span className="w-2 h-2 rounded-full" style={{ background: '#FF5F57' }} />
+          <span className="w-2 h-2 rounded-full" style={{ background: '#FEBC2E' }} />
+          <span className="w-2 h-2 rounded-full" style={{ background: '#28C840' }} />
+          <div className="flex-1 mx-3 px-2 py-0.5 rounded text-[8px] text-text-tertiary" style={{ background: 'rgba(255,255,255,0.07)' }}>
+            cloomy.com/s/tu-negocio
+          </div>
+        </div>
+        <div style={{ height: '240px', overflow: 'hidden' }}>{children}</div>
+      </div>
+      <div className="w-[4px] h-[20px]" style={{ background: 'rgba(255,255,255,0.15)' }} />
+      <div className="w-[90px] h-[7px] rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }} />
+    </div>
+  )
+}
+
 const inputClass = (hasError) =>
   `w-full bg-bg-elevated border rounded-xl px-4 py-3 text-white placeholder-text-tertiary text-sm focus:outline-none transition-colors ${
     hasError
@@ -70,6 +212,15 @@ export default function Demo() {
   const [itemsVisible, setItemsVisible] = useState(true)
   const [accentColor, setAccentColor] = useState('#6C47FF')
   const [errors, setErrors]           = useState({})
+  const [deviceIndex, setDeviceIndex] = useState(0)
+  const [deviceVisible, setDeviceVisible] = useState(true)
+
+  const changeDevice = (i) => {
+    setDeviceVisible(false)
+    setTimeout(() => { setDeviceIndex(i); setDeviceVisible(true) }, 200)
+  }
+  const prevDevice = () => changeDevice((deviceIndex - 1 + DEVICES.length) % DEVICES.length)
+  const nextDevice = () => changeDevice((deviceIndex + 1 + DEVICES.length) % DEVICES.length)
 
   const displayName = businessName || 'Tu negocio'
 
@@ -362,75 +513,89 @@ export default function Demo() {
               className={`bg-bg-elevated border-t lg:border-t-0 lg:border-l border-brand-500/20 p-8 lg:p-10 flex flex-col items-center justify-center reveal-right ${rightInView ? 'in-view' : ''}`}
               style={{ transitionDelay: '0.2s' }}
             >
-              <div className="flex items-center gap-2 mb-6 self-start">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-xs font-bold tracking-widest text-text-secondary uppercase">
-                  Preview en vivo
-                </span>
+              {/* Header */}
+              <div className="flex items-center justify-between w-full mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                  <span className="text-xs font-bold tracking-widest text-text-secondary uppercase">
+                    Preview en vivo
+                  </span>
+                </div>
+
+                {/* Device switcher — desktop only */}
+                <div className="hidden lg:flex items-center gap-2">
+                  <button onClick={prevDevice} aria-label="Dispositivo anterior"
+                    className="text-white/40 hover:text-white/80 transition-colors">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <span className="text-[11px] text-text-secondary font-medium w-16 text-center">
+                    {DEVICES[deviceIndex].label}
+                  </span>
+                  <button onClick={nextDevice} aria-label="Siguiente dispositivo"
+                    className="text-white/40 hover:text-white/80 transition-colors">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
-              {/* Phone mockup */}
+              {/* Mobile/tablet: siempre phone */}
+              <div className="lg:hidden">
+                <PhoneMockup>
+                  <StoreNarrow content={content} accentColor={accentColor} displayName={displayName}
+                    clock={clock} itemsVisible={itemsVisible} format={format} />
+                </PhoneMockup>
+              </div>
+
+              {/* Desktop: frame según dispositivo */}
               <div
-                className="relative w-[220px] h-[420px] rounded-[36px] border-2 border-white/10 overflow-hidden flex flex-col shadow-2xl"
-                style={{ background: '#1A1A2E' }}
+                className="hidden lg:flex items-center justify-center flex-1 w-full"
+                style={{ opacity: deviceVisible ? 1 : 0, transition: 'opacity 0.2s ease' }}
               >
-                <div className="flex items-center justify-between px-6 py-2 text-white text-[10px]">
-                  <span>{clock}</span>
-                  <span>●●●</span>
-                </div>
+                {deviceIndex === 0 && (
+                  <PhoneMockup>
+                    <StoreNarrow content={content} accentColor={accentColor} displayName={displayName}
+                      clock={clock} itemsVisible={itemsVisible} format={format} />
+                  </PhoneMockup>
+                )}
+                {deviceIndex === 1 && (
+                  <TabletMockup>
+                    <StoreNarrow content={content} accentColor={accentColor} displayName={displayName}
+                      clock={clock} itemsVisible={itemsVisible} format={format} />
+                  </TabletMockup>
+                )}
+                {deviceIndex === 2 && (
+                  <NotebookMockup>
+                    <StoreWide content={content} accentColor={accentColor} displayName={displayName}
+                      itemsVisible={itemsVisible} format={format} />
+                  </NotebookMockup>
+                )}
+                {deviceIndex === 3 && (
+                  <MonitorMockup>
+                    <StoreWide content={content} accentColor={accentColor} displayName={displayName}
+                      itemsVisible={itemsVisible} format={format} />
+                  </MonitorMockup>
+                )}
+              </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 border-b border-white/5">
-                  <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                    style={{ backgroundColor: accentColor }}
-                  >
-                    {displayName.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="text-white text-xs font-semibold leading-none">{displayName}</div>
-                    <div className="text-text-tertiary text-[9px] mt-0.5">cloomy.com/s/...</div>
-                  </div>
-                </div>
-
-                <div
-                  className="mx-3 mt-2 rounded-xl h-14 flex items-center justify-center"
-                  style={{ backgroundColor: `${accentColor}66` }}
-                >
-                  <span className="text-white text-[10px] font-semibold">{content.banner}</span>
-                </div>
-
-                <div className="px-3 mt-3">
-                  <span className="text-text-tertiary text-[9px] font-bold tracking-widest uppercase">
-                    {content.section}
-                  </span>
-                  <div className="mt-2 space-y-1.5">
-                    {content.items.map((item, i) => (
-                      <div
-                        key={`${format}-${item.name}`}
-                        className="flex items-center justify-between bg-white/5 rounded-xl px-3 py-2"
-                        style={{
-                          opacity: itemsVisible ? 1 : 0,
-                          transform: itemsVisible ? 'translateY(0)' : 'translateY(6px)',
-                          transition: `opacity 0.25s ease ${i * 60}ms, transform 0.25s ease ${i * 60}ms`,
-                        }}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-lg" style={{ backgroundColor: `${accentColor}4d` }} />
-                          <div>
-                            <div className="text-white text-[10px] font-medium">{item.name}</div>
-                            <div className="text-text-tertiary text-[9px]">{item.price}</div>
-                          </div>
-                        </div>
-                        <div
-                          className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs"
-                          style={{ backgroundColor: accentColor }}
-                        >
-                          +
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              {/* Dots indicadores — desktop only */}
+              <div className="hidden lg:flex items-center gap-1.5 mt-5">
+                {DEVICES.map((d, i) => (
+                  <button
+                    key={d.id}
+                    onClick={() => changeDevice(i)}
+                    aria-label={d.label}
+                    className="rounded-full transition-all duration-300"
+                    style={{
+                      width:      i === deviceIndex ? '16px' : '6px',
+                      height:     '6px',
+                      background: i === deviceIndex ? '#6C47FF' : 'rgba(255,255,255,0.2)',
+                    }}
+                  />
+                ))}
               </div>
             </div>
 
