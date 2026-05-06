@@ -238,7 +238,7 @@ function PlanCard({ plan, billing, index }) {
   return (
     <div
       ref={ref}
-      className={`rounded-2xl p-8 flex flex-col reveal ${inView ? 'in-view' : ''}`}
+      className={`rounded-2xl p-8 flex flex-col h-full reveal ${inView ? 'in-view' : ''}`}
       style={{
         transitionDelay: `${index * 120}ms`,
         background: plan.highlight
@@ -415,7 +415,7 @@ export default function Pricing() {
           <PricingTabletCarousel billing={billing} />
         </div>
 
-        <div className="hidden lg:grid lg:grid-cols-3 gap-4 items-start">
+        <div className="hidden lg:grid lg:grid-cols-3 gap-4">
           {PLANS.map((plan, i) => (
             <PlanCard key={plan.id} plan={plan} billing={billing} index={i} />
           ))}
