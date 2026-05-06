@@ -160,8 +160,8 @@ export default function Features() {
               </div>
             </div>
 
-            {/* Right: mockup notification — hidden on mobile */}
-            <div className="relative hidden lg:flex items-center justify-center p-8 lg:p-10 lg:border-l border-brand-500/20">
+            {/* Right: mockup notification — hidden on mobile, visible on tablet+ */}
+            <div className="relative hidden md:flex items-center justify-center p-8 lg:p-10 border-t lg:border-t-0 lg:border-l border-brand-500/20">
               {/* QR code placeholder */}
               <div className="absolute top-8 right-8 w-20 h-20 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
                 <svg className="w-12 h-12 text-text-tertiary" fill="currentColor" viewBox="0 0 24 24">
