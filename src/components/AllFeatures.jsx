@@ -60,6 +60,110 @@ const FEATURES = [
   },
 ]
 
+function FeatureCardMobile({ feature }) {
+  return (
+    <div className="w-full shrink-0 px-1" style={{ minWidth: '100%' }}>
+      <div
+        className="p-7 rounded-2xl h-full"
+        style={{
+          background: 'rgba(255,255,255,0.05)',
+          border: '1px solid rgba(108,71,255,0.2)',
+        }}
+      >
+        <div className="w-10 h-10 rounded-xl bg-brand-500/15 flex items-center justify-center text-brand-500 mb-5">
+          {feature.icon}
+        </div>
+        <h3 className="text-white font-bold text-lg mb-2">{feature.title}</h3>
+        <p className="text-text-secondary text-sm leading-relaxed">{feature.desc}</p>
+      </div>
+    </div>
+  )
+}
+
+function MobileCarousel() {
+  const [current, setCurrent] = useState(0)
+  const [touchStartX, setTouchStartX] = useState(null)
+  const [dragDelta, setDragDelta] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const total = FEATURES.length
+
+  const goTo = (i) => setCurrent((i + total) % total)
+
+  const onTouchStart = (e) => { setTouchStartX(e.touches[0].clientX); setDragging(true); setDragDelta(0) }
+  const onTouchMove  = (e) => { if (touchStartX === null) return; setDragDelta(e.touches[0].clientX - touchStartX) }
+  const onTouchEnd   = () => {
+    if (dragDelta < -45) goTo(current + 1)
+    else if (dragDelta > 45) goTo(current - 1)
+    setTouchStartX(null); setDragDelta(0); setDragging(false)
+  }
+
+  return (
+    <div>
+      {/* Track + arrows in a row */}
+      <div className="flex items-center gap-4">
+
+        {/* Arrow prev */}
+        <button
+          onClick={() => goTo(current - 1)}
+          aria-label="Anterior"
+          className="shrink-0 text-white/40 hover:text-white/80 transition-colors duration-200"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        {/* Track */}
+        <div
+          className="flex-1 overflow-hidden rounded-2xl"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
+          <div
+            className="flex"
+            style={{
+              transform: `translateX(calc(${-current * 100}% + ${dragDelta}px))`,
+              transition: dragging ? 'none' : 'transform 0.35s cubic-bezier(0.4,0,0.2,1)',
+            }}
+          >
+            {FEATURES.map((f) => <FeatureCardMobile key={f.title} feature={f} />)}
+          </div>
+        </div>
+
+        {/* Arrow next */}
+        <button
+          onClick={() => goTo(current + 1)}
+          aria-label="Siguiente"
+          className="shrink-0 text-white/40 hover:text-white/80 transition-colors duration-200"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+      </div>
+
+      {/* Dots */}
+      <div className="flex justify-center gap-2 mt-5">
+        {FEATURES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            aria-label={`Ir a ${i + 1}`}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: i === current ? '20px' : '8px',
+              height: '8px',
+              background: i === current ? '#6C47FF' : 'rgba(255,255,255,0.2)',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function FeatureCell({ feature, index }) {
   const [ref, inView] = useInView(0.15)
   return (
@@ -124,7 +228,13 @@ export default function AllFeatures() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-brand-500/20 rounded-2xl overflow-hidden border border-brand-500/20">
+        {/* Mobile: carousel */}
+        <div className="lg:hidden">
+          <MobileCarousel />
+        </div>
+
+        {/* Desktop: grid */}
+        <div className="hidden lg:grid lg:grid-cols-3 gap-px bg-brand-500/20 rounded-2xl overflow-hidden border border-brand-500/20">
           {FEATURES.map((feature, i) => (
             <FeatureCell key={feature.title} feature={feature} index={i} />
           ))}

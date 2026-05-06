@@ -29,6 +29,7 @@ export default function Hero() {
   // Main typewriter
   useEffect(() => {
     const t0 = setTimeout(() => setIllVisible(true), 600)
+    const isMobile = window.innerWidth < 1024
     const delay = setTimeout(() => {
       intervalRef.current = setInterval(() => {
         setDisplayed((prev) => {
@@ -39,7 +40,7 @@ export default function Hero() {
           }
           return next
         })
-      }, 85)
+      }, isMobile ? 130 : 85)
     }, 400)
     return () => {
       clearTimeout(t0)

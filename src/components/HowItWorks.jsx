@@ -87,11 +87,12 @@ function CardContent({ step }) {
 
 function MobileCard({ step, index }) {
   const [ref, inView] = useInView(0.15)
+  const slideClass = index % 2 === 0 ? 'reveal-left' : 'reveal-right'
   return (
     <div
       ref={ref}
-      className={`reveal ${inView ? 'in-view' : ''}`}
-      style={{ transitionDelay: `${index * 100}ms` }}
+      className={`${slideClass} ${inView ? 'in-view' : ''}`}
+      style={{ transitionDelay: `${index * 80}ms` }}
     >
       <div
         className="rounded-2xl p-6"
