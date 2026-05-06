@@ -111,7 +111,7 @@ function StoreWide({ content, accentColor, displayName, itemsVisible, format }) 
         <span className="text-white text-[10px] font-bold">{displayName}</span>
         <div className="flex gap-3 ml-auto">
           {['Inicio', content.section, 'Contacto'].map(l => (
-            <span key={l} className="text-[8px] text-text-tertiary">{l}</span>
+            <span key={l} className="text-[8px] text-text-tertiary lowercase">{l}</span>
           ))}
         </div>
       </div>
