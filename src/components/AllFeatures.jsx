@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useInView } from '../hooks/useInView'
 
 const TYPED_TEXT = 'En un solo lugar.'
@@ -164,6 +164,139 @@ function MobileCarousel() {
   )
 }
 
+function TabletCarousel() {
+  const [current, setCurrent] = useState(0)
+  const [containerWidth, setContainerWidth] = useState(700)
+  const containerRef = useRef(null)
+  const [touchStartX, setTouchStartX] = useState(null)
+  const total = FEATURES.length
+
+  useEffect(() => {
+    const update = () => {
+      if (containerRef.current) setContainerWidth(containerRef.current.offsetWidth)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  const goTo = useCallback((i) => setCurrent((i + total) % total), [total])
+
+  const getOffset = (index) => {
+    let d = index - current
+    if (d > total / 2) d -= total
+    if (d < -total / 2) d += total
+    return d
+  }
+
+  const CARD_RATIO   = 0.65
+  const SIDE_VISIBLE = 75
+  const cardWidth    = containerWidth * CARD_RATIO
+  const sideShift    = containerWidth / 2 + cardWidth / 2 - SIDE_VISIBLE
+
+  const getStyle = (index) => {
+    const offset = getOffset(index)
+    const abs    = Math.abs(offset)
+    const shift  = abs === 0 ? 0
+      : abs === 1 ? Math.sign(offset) * sideShift
+      : Math.sign(offset) * (sideShift + cardWidth)
+
+    return {
+      left:      '50%',
+      width:     `${CARD_RATIO * 100}%`,
+      transform: `translateX(calc(-50% + ${shift}px)) scale(${abs === 0 ? 1 : 0.88})`,
+      opacity:   abs === 0 ? 1 : abs === 1 ? 0.5 : 0,
+      filter:    abs === 0 ? 'none' : 'blur(3px)',
+      zIndex:    abs === 0 ? 10 : abs === 1 ? 5 : 1,
+      transition:'transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s, filter 0.4s',
+      cursor:    abs === 1 ? 'pointer' : 'default',
+    }
+  }
+
+  const onTouchStart = (e) => setTouchStartX(e.touches[0].clientX)
+  const onTouchEnd   = (e) => {
+    if (touchStartX === null) return
+    const delta = e.changedTouches[0].clientX - touchStartX
+    if (delta < -50) goTo(current + 1)
+    else if (delta > 50) goTo(current - 1)
+    setTouchStartX(null)
+  }
+
+  return (
+    <div>
+      <div
+        ref={containerRef}
+        className="relative overflow-hidden"
+        style={{ height: '210px' }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        {FEATURES.map((f, i) => {
+          const offset = getOffset(i)
+          const abs    = Math.abs(offset)
+          return (
+            <div
+              key={f.title}
+              className="absolute top-2 bottom-2"
+              style={getStyle(i)}
+              onClick={abs === 1 ? () => goTo(i) : undefined}
+            >
+              <div
+                className="h-full p-6 rounded-2xl"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border:     '1px solid rgba(108,71,255,0.2)',
+                }}
+              >
+                <div className="w-10 h-10 rounded-xl bg-brand-500/15 flex items-center justify-center text-brand-500 mb-4">
+                  {f.icon}
+                </div>
+                <h3 className="text-white font-bold text-lg mb-2">{f.title}</h3>
+                <p className="text-text-secondary text-sm leading-relaxed">{f.desc}</p>
+              </div>
+            </div>
+          )
+        })}
+
+        <button
+          onClick={() => goTo(current - 1)}
+          aria-label="Anterior"
+          className="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/40 hover:text-white/80 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={() => goTo(current + 1)}
+          aria-label="Siguiente"
+          className="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/40 hover:text-white/80 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="flex justify-center gap-2 mt-4">
+        {FEATURES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            aria-label={`Ir a ${i + 1}`}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width:      i === current ? '20px' : '8px',
+              height:     '8px',
+              background: i === current ? '#6C47FF' : 'rgba(255,255,255,0.2)',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function FeatureCell({ feature, index }) {
   const [ref, inView] = useInView(0.15)
   return (
@@ -228,9 +361,14 @@ export default function AllFeatures() {
           </p>
         </div>
 
-        {/* Mobile: carousel */}
-        <div className="lg:hidden">
+        {/* Mobile: carousel — solo < md */}
+        <div className="md:hidden">
           <MobileCarousel />
+        </div>
+
+        {/* Tablet: cover-flow carousel — md a lg */}
+        <div className="hidden md:block lg:hidden">
+          <TabletCarousel />
         </div>
 
         {/* Desktop: grid */}
