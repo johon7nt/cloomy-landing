@@ -118,30 +118,18 @@ export default function Hero() {
               Plataforma Intuitiva · Sin comisiones por venta
             </div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-6xl xl:text-7xl font-black leading-[1.22] tracking-tight text-white mb-8 relative">
-              {/* Placeholder invisible que reserva el espacio final desde el inicio */}
-              <span className="invisible" aria-hidden>
-                {FULL_TEXT.slice(0, HIGHLIGHT_START)}
-                <mark className="highlight-brand text-white not-italic whitespace-nowrap">
-                  {HIGHLIGHT_TEXT}
+            <h1 className="text-5xl sm:text-6xl lg:text-6xl xl:text-7xl font-black leading-[1.22] tracking-tight text-white mb-8 min-h-[4em]">
+              <span className="relative z-10">{plain1}</span>
+              {highlightedText && (
+                <mark
+                  className="highlight-brand text-white not-italic whitespace-nowrap"
+                  style={{ fontFamily: FONTS[fontIndex].family }}
+                >
+                  {highlightedText}
                 </mark>
-                {FULL_TEXT.slice(HIGHLIGHT_END)}
-              </span>
-
-              {/* Animación superpuesta sin afectar el layout */}
-              <span className="absolute inset-0">
-                <span>{plain1}</span>
-                {highlightedText && (
-                  <mark
-                    className="highlight-brand text-white not-italic whitespace-nowrap"
-                    style={{ fontFamily: FONTS[fontIndex].family }}
-                  >
-                    {highlightedText}
-                  </mark>
-                )}
-                {plain2}
-                {showCursor && <span className="cursor-blink" aria-hidden />}
-              </span>
+              )}
+              {plain2}
+              {showCursor && <span className="cursor-blink" aria-hidden />}
             </h1>
 
             <p
