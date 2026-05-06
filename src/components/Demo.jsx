@@ -522,8 +522,8 @@ export default function Demo() {
                   </span>
                 </div>
 
-                {/* Device switcher — desktop only */}
-                <div className="hidden lg:flex items-center gap-2">
+                {/* Device switcher — tablet y desktop */}
+                <div className="hidden md:flex items-center gap-2">
                   <button onClick={prevDevice} aria-label="Dispositivo anterior"
                     className="text-white/40 hover:text-white/80 transition-colors">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -542,17 +542,17 @@ export default function Demo() {
                 </div>
               </div>
 
-              {/* Mobile/tablet: siempre phone */}
-              <div className="lg:hidden">
+              {/* Mobile: siempre phone */}
+              <div className="md:hidden">
                 <PhoneMockup>
                   <StoreNarrow content={content} accentColor={accentColor} displayName={displayName}
                     clock={clock} itemsVisible={itemsVisible} format={format} />
                 </PhoneMockup>
               </div>
 
-              {/* Desktop: frame según dispositivo */}
+              {/* Tablet y desktop: frame según dispositivo */}
               <div
-                className="hidden lg:flex items-center justify-center flex-1 w-full"
+                className="hidden md:flex items-center justify-center flex-1 w-full"
                 style={{ opacity: deviceVisible ? 1 : 0, transition: 'opacity 0.2s ease' }}
               >
                 {deviceIndex === 0 && (
@@ -581,8 +581,8 @@ export default function Demo() {
                 )}
               </div>
 
-              {/* Dots indicadores — desktop only */}
-              <div className="hidden lg:flex items-center gap-1.5 mt-5">
+              {/* Dots indicadores — tablet y desktop */}
+              <div className="hidden md:flex items-center gap-1.5 mt-5">
                 {DEVICES.map((d, i) => (
                   <button
                     key={d.id}
