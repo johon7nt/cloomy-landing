@@ -142,13 +142,65 @@ export default function Demo() {
             {/* Left: wizard */}
             <div
               ref={leftRef}
-              className={`bg-bg-card p-8 lg:p-10 flex flex-col justify-center reveal-left ${leftInView ? 'in-view' : ''}`}
+              className={`bg-bg-card p-6 sm:p-8 lg:p-10 flex flex-col sm:justify-center reveal-left ${leftInView ? 'in-view' : ''}`}
               style={{ transitionDelay: '0.1s' }}
             >
+
+              {/* Mobile: pasos horizontales en la parte superior */}
+              <div className="flex sm:hidden flex-row items-start mb-6">
+                {STEPS.map((step, i) => (
+                  <div key={step.id} className="flex flex-col items-center flex-1">
+                    <div className="flex items-center w-full">
+                      {i > 0 && (
+                        <div className="flex-1 h-px" style={{
+                          background: step.id <= currentStep ? 'rgba(108,71,255,0.5)' : 'rgba(255,255,255,0.1)',
+                          transition: 'background 0.3s',
+                        }} />
+                      )}
+                      <button
+                        onClick={() => goToStep(step.id)}
+                        className={`w-7 h-7 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0 transition-all duration-300 ${
+                          step.id === currentStep
+                            ? 'bg-brand-500 text-white'
+                            : step.id < currentStep
+                            ? 'bg-brand-500/30 text-brand-500 cursor-pointer'
+                            : 'border border-white/20 text-text-tertiary cursor-default'
+                        }`}
+                        style={step.id === currentStep ? {
+                          boxShadow: '0 0 0 3px rgba(108,71,255,0.2), 0 0 12px rgba(108,71,255,0.55)',
+                        } : {}}
+                      >
+                        {step.id < currentStep ? (
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : step.id}
+                      </button>
+                      {i < STEPS.length - 1 && (
+                        <div className="flex-1 h-px" style={{
+                          background: step.id < currentStep ? 'rgba(108,71,255,0.5)' : 'rgba(255,255,255,0.1)',
+                          transition: 'background 0.3s',
+                        }} />
+                      )}
+                    </div>
+                    <span className={`text-[9px] mt-1.5 text-center leading-tight transition-colors duration-200 ${
+                      step.id === currentStep
+                        ? 'text-white font-semibold'
+                        : step.id < currentStep
+                        ? 'text-brand-400'
+                        : 'text-text-tertiary'
+                    }`}>
+                      {step.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Layout principal: en desktop los pasos verticales van al lado del form */}
               <div className="flex gap-8">
 
-                {/* Vertical step list */}
-                <div className="flex flex-col shrink-0">
+                {/* Vertical step list — solo desktop */}
+                <div className="hidden sm:flex flex-col shrink-0">
                   {STEPS.map((step, i) => (
                     <div key={step.id} className="flex items-start gap-3">
                       <div className="flex flex-col items-center">
@@ -202,13 +254,13 @@ export default function Demo() {
                 </div>
 
                 {/* Form area */}
-                <div className="flex-1 flex flex-col gap-6">
+                <div className="flex-1 flex flex-col gap-5 sm:gap-6">
                   <div>
 
                     {currentStep === 1 && (
-                      <div className="space-y-4">
+                      <div className="space-y-3 sm:space-y-4">
                         <div>
-                          <label className="block text-sm text-text-secondary mb-1.5">Email</label>
+                          <label className="block text-xs sm:text-sm text-text-secondary mb-1.5">Email</label>
                           <input
                             type="email"
                             placeholder="tu@negocio.com"
@@ -219,7 +271,7 @@ export default function Demo() {
                           {errors.email && <p className="text-red-400 text-xs mt-1.5">{errors.email}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm text-text-secondary mb-1.5">Contraseña</label>
+                          <label className="block text-xs sm:text-sm text-text-secondary mb-1.5">Contraseña</label>
                           <input
                             type="password"
                             placeholder="mínimo 8 caracteres"
@@ -233,9 +285,9 @@ export default function Demo() {
                     )}
 
                     {currentStep === 2 && (
-                      <div className="space-y-4">
+                      <div className="space-y-3 sm:space-y-4">
                         <div>
-                          <label className="block text-sm text-text-secondary mb-1.5">Nombre del negocio</label>
+                          <label className="block text-xs sm:text-sm text-text-secondary mb-1.5">Nombre del negocio</label>
                           <input
                             type="text"
                             placeholder="ej. Café Bardo"
@@ -246,7 +298,7 @@ export default function Demo() {
                           {errors.businessName && <p className="text-red-400 text-xs mt-1.5">{errors.businessName}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm text-text-secondary mb-1.5">Formato</label>
+                          <label className="block text-xs sm:text-sm text-text-secondary mb-1.5">Formato</label>
                           <select
                             className={inputClass(false)}
                             value={format}
@@ -261,14 +313,14 @@ export default function Demo() {
                     )}
 
                     {currentStep === 3 && (
-                      <div className="space-y-4">
-                        <p className="text-text-secondary text-sm">Personalizá los colores de tu negocio.</p>
-                        <div className="flex gap-3 flex-wrap">
+                      <div className="space-y-3 sm:space-y-4">
+                        <p className="text-text-secondary text-xs sm:text-sm">Personalizá los colores de tu negocio.</p>
+                        <div className="flex gap-2.5 sm:gap-3 flex-wrap">
                           {['#6C47FF', '#FF453A', '#FFB340', '#00C853', '#0A84FF', '#FF6B6B'].map((color) => (
                             <button
                               key={color}
                               onClick={() => setAccentColor(color)}
-                              className="w-10 h-10 rounded-xl transition-all duration-200 hover:scale-110"
+                              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl transition-all duration-200 hover:scale-110"
                               style={{
                                 backgroundColor: color,
                                 border: accentColor === color ? '3px solid white' : '2px solid rgba(255,255,255,0.2)',
@@ -281,14 +333,14 @@ export default function Demo() {
                     )}
 
                     {currentStep === 4 && (
-                      <div className="text-center py-4">
-                        <div className="w-16 h-16 rounded-full bg-brand-500/20 flex items-center justify-center mx-auto mb-4">
-                          <svg className="w-8 h-8 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="text-center py-3 sm:py-4">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-brand-500/20 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                          <svg className="w-7 h-7 sm:w-8 sm:h-8 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
-                        <h3 className="text-white font-bold text-xl mb-2">¡Ya estás listo!</h3>
-                        <p className="text-text-secondary text-sm">
+                        <h3 className="text-white font-bold text-lg sm:text-xl mb-2">¡Ya estás listo!</h3>
+                        <p className="text-text-secondary text-xs sm:text-sm">
                           Tu negocio en{' '}
                           <span className="text-brand-500">cloomy.com/s/tu-negocio</span>
                         </p>
