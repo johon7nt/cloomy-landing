@@ -226,7 +226,7 @@ function TabletCarousel() {
     <div>
       <div
         ref={containerRef}
-        className="relative overflow-hidden"
+        className="relative"
         style={{ height: '280px' }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
@@ -367,7 +367,7 @@ export default function AllFeatures() {
         </div>
 
         {/* Tablet: cover-flow carousel — md a lg */}
-        <div className="hidden md:block lg:hidden">
+        <div className="hidden md:block lg:hidden -mx-6 overflow-hidden">
           <TabletCarousel />
         </div>
 
