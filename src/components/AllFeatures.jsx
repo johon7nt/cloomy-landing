@@ -190,7 +190,7 @@ function TabletCarousel() {
   }
 
   const CARD_RATIO   = 0.38
-  const SIDE_VISIBLE = 120
+  const SIDE_VISIBLE = 185
   const cardWidth    = containerWidth * CARD_RATIO
   const sideShift    = containerWidth / 2 + cardWidth / 2 - SIDE_VISIBLE
 
