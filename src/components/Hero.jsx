@@ -122,7 +122,7 @@ export default function Hero() {
               <span className="relative z-10">{plain1}</span>
               {highlightedText && (
                 <mark
-                  className="highlight-brand text-white not-italic"
+                  className="highlight-brand text-white not-italic whitespace-nowrap"
                   style={{ fontFamily: FONTS[fontIndex].family }}
                 >
                   {highlightedText}
