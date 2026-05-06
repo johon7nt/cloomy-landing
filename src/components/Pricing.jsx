@@ -118,7 +118,7 @@ function PricingTabletCarousel({ billing }) {
       <div
         ref={containerRef}
         className="relative"
-        style={{ height: '430px' }}
+        style={{ height: '500px' }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -128,7 +128,7 @@ function PricingTabletCarousel({ billing }) {
           return (
             <div
               key={plan.id}
-              className="absolute top-2 bottom-2"
+              className="absolute top-2 bottom-4"
               style={getStyle(i)}
               onClick={abs === 1 ? () => goTo(i) : undefined}
             >
