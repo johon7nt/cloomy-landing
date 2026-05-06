@@ -11,12 +11,12 @@ const NAV_LINKS = [
 
 // Navigate to href, jumping instantly past the HowItWorks sticky section
 // so its 500vh scroll animation doesn't play at high speed
-function scrollTo(href, onDone) {
+function scrollTo(href) {
   const target = document.querySelector(href)
   if (!target) return
 
   const hiw = document.getElementById('how-it-works')
-  if (!hiw) { target.scrollIntoView({ behavior: 'smooth' }); onDone?.(); return }
+  if (!hiw) { target.scrollIntoView({ behavior: 'smooth' }); return }
 
   const currentY  = window.scrollY
   const hiwTop    = hiw.getBoundingClientRect().top  + currentY
@@ -27,14 +27,12 @@ function scrollTo(href, onDone) {
                   (currentY > hiwTop    && targetTop < hiwBottom)
 
   if (crosses) {
-    // Teleport directly — no smooth scroll through the sticky animation
     document.documentElement.style.scrollBehavior = 'auto'
     window.scrollTo(0, targetTop)
     requestAnimationFrame(() => { document.documentElement.style.scrollBehavior = '' })
   } else {
     target.scrollIntoView({ behavior: 'smooth' })
   }
-  onDone?.()
 }
 
 export default function Navbar({ visible = true }) {
@@ -52,7 +50,12 @@ export default function Navbar({ visible = true }) {
 
   const handleLink = (e, href) => {
     e.preventDefault()
-    scrollTo(href, () => setMenuOpen(false))
+    if (menuOpen) {
+      setMenuOpen(false)
+      setTimeout(() => scrollTo(href), 370)
+    } else {
+      scrollTo(href)
+    }
   }
 
   return (
