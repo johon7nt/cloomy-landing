@@ -189,8 +189,8 @@ function TabletCarousel() {
     return d
   }
 
-  const CARD_RATIO   = 0.65
-  const SIDE_VISIBLE = 75
+  const CARD_RATIO   = 0.38
+  const SIDE_VISIBLE = 120
   const cardWidth    = containerWidth * CARD_RATIO
   const sideShift    = containerWidth / 2 + cardWidth / 2 - SIDE_VISIBLE
 
@@ -204,7 +204,7 @@ function TabletCarousel() {
     return {
       left:      '50%',
       width:     `${CARD_RATIO * 100}%`,
-      transform: `translateX(calc(-50% + ${shift}px)) scale(${abs === 0 ? 1 : 0.88})`,
+      transform: `translateX(calc(-50% + ${shift}px)) scale(${abs === 0 ? 1 : 0.93})`,
       opacity:   abs === 0 ? 1 : abs === 1 ? 0.5 : 0,
       filter:    abs === 0 ? 'none' : 'blur(3px)',
       zIndex:    abs === 0 ? 10 : abs === 1 ? 5 : 1,
@@ -227,7 +227,7 @@ function TabletCarousel() {
       <div
         ref={containerRef}
         className="relative overflow-hidden"
-        style={{ height: '210px' }}
+        style={{ height: '280px' }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
