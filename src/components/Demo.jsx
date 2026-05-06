@@ -348,7 +348,7 @@ export default function Demo() {
                     )}
                   </div>
 
-                  <div className={`flex ${currentStep === 4 ? 'justify-center' : 'justify-end'}`}>
+                  <div className={`flex ${currentStep === 4 ? 'justify-center' : 'justify-start sm:justify-end'}`}>
                     {currentStep === 4 ? (
                       <a href="#pricing" className="btn-primary">Empezar gratis →</a>
                     ) : (
