@@ -147,19 +147,14 @@ export default function Demo() {
             >
 
               {/* Mobile: pasos horizontales en la parte superior */}
-              <div className="flex sm:hidden flex-row items-start mb-6">
+              <div className="flex sm:hidden items-start mb-6">
                 {STEPS.map((step, i) => (
-                  <div key={step.id} className="flex flex-col items-center flex-1">
-                    <div className="flex items-center w-full">
-                      {i > 0 && (
-                        <div className="flex-1 h-px" style={{
-                          background: step.id <= currentStep ? 'rgba(108,71,255,0.5)' : 'rgba(255,255,255,0.1)',
-                          transition: 'background 0.3s',
-                        }} />
-                      )}
+                  <div key={step.id} className={`flex items-start ${i < STEPS.length - 1 ? 'flex-1' : ''}`}>
+                    {/* Círculo + label centrados */}
+                    <div className="flex flex-col items-center shrink-0">
                       <button
                         onClick={() => goToStep(step.id)}
-                        className={`w-7 h-7 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0 transition-all duration-300 ${
+                        className={`w-7 h-7 rounded-full text-[10px] font-bold flex items-center justify-center transition-all duration-300 ${
                           step.id === currentStep
                             ? 'bg-brand-500 text-white'
                             : step.id < currentStep
@@ -176,22 +171,23 @@ export default function Demo() {
                           </svg>
                         ) : step.id}
                       </button>
-                      {i < STEPS.length - 1 && (
-                        <div className="flex-1 h-px" style={{
-                          background: step.id < currentStep ? 'rgba(108,71,255,0.5)' : 'rgba(255,255,255,0.1)',
-                          transition: 'background 0.3s',
-                        }} />
-                      )}
+                      <span className={`text-[9px] mt-1.5 text-center leading-tight transition-colors duration-200 ${
+                        step.id === currentStep
+                          ? 'text-white font-semibold'
+                          : step.id < currentStep
+                          ? 'text-brand-400'
+                          : 'text-text-tertiary'
+                      }`}>
+                        {step.label}
+                      </span>
                     </div>
-                    <span className={`text-[9px] mt-1.5 text-center leading-tight transition-colors duration-200 ${
-                      step.id === currentStep
-                        ? 'text-white font-semibold'
-                        : step.id < currentStep
-                        ? 'text-brand-400'
-                        : 'text-text-tertiary'
-                    }`}>
-                      {step.label}
-                    </span>
+                    {/* Conector horizontal que ocupa el espacio restante */}
+                    {i < STEPS.length - 1 && (
+                      <div className="flex-1 h-px mt-3.5" style={{
+                        background: step.id < currentStep ? 'rgba(108,71,255,0.5)' : 'rgba(255,255,255,0.1)',
+                        transition: 'background 0.3s',
+                      }} />
+                    )}
                   </div>
                 ))}
               </div>
