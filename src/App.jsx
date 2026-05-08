@@ -9,6 +9,7 @@ import Demo from './components/Demo'
 import Pricing from './components/Pricing'
 import Testimonials from './components/Testimonials'
 import FAQ from './components/FAQ'
+import CTA from './components/CTA'
 import Footer from './components/Footer'
 import SplashScreen from './components/SplashScreen'
 
@@ -98,6 +99,7 @@ export default function App() {
           {/* <Testimonials /> */}
           <Pricing />
           <FAQ />
+          <CTA />
         </main>
         <Footer />
       </div>
