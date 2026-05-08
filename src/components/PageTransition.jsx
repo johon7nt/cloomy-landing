@@ -6,7 +6,7 @@ export default function PageTransition() {
   const [gone,  setGone]  = useState(false)
 
   useEffect(() => {
-    const t = setTimeout(() => setPhase('out'), 380)
+    const t = setTimeout(() => setPhase('out'), 900)
     return () => clearTimeout(t)
   }, [])
 
@@ -42,14 +42,15 @@ export default function PageTransition() {
           background: 'linear-gradient(90deg, #6C47FF, #9D7FFF)',
           boxShadow: '0 0 8px rgba(108,71,255,0.8)',
           width: phase === 'in' ? '100%' : '100%',
-          animation: 'ptBar 0.38s ease-out forwards',
+          animation: 'ptBar 0.9s ease-out forwards',
         }} />
       </div>
 
       <style>{`
         @keyframes ptBar {
-          from { width: 0%; opacity: 0.6; }
-          to   { width: 100%; opacity: 1; }
+          0%   { width: 0%;   opacity: 0.5; }
+          60%  { width: 75%;  opacity: 1;   }
+          100% { width: 100%; opacity: 1;   }
         }
       `}</style>
     </div>
