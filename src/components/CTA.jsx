@@ -58,10 +58,10 @@ export default function CTA() {
         }}
       />
     <section ref={sectionRef} className="section-divider overflow-hidden flex items-center" style={{ position: 'relative', zIndex: 12, minHeight: '100vh' }}>
-      <div className="max-w-4xl mx-auto px-6 w-full py-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 w-full py-16 sm:py-20">
         <div
           ref={ref}
-          className="relative rounded-3xl text-center px-8 py-16 lg:px-16 lg:py-20 overflow-hidden"
+          className="relative rounded-2xl sm:rounded-3xl text-center px-5 py-12 sm:px-8 sm:py-16 lg:px-16 lg:py-20 overflow-hidden"
           style={{
             background: 'linear-gradient(135deg, rgba(108,71,255,0.13) 0%, rgba(76,46,204,0.07) 100%)',
             border: '1px solid rgba(108,71,255,0.38)',
@@ -132,7 +132,7 @@ export default function CTA() {
 
           {/* Badge */}
           <div
-            className={`inline-flex items-center gap-1.5 border border-brand-500/35 rounded-full px-4 py-1.5 text-xs text-brand-400 tracking-wide mb-8 ${anim(0.05)}`}
+            className={`inline-flex items-center gap-1.5 border border-brand-500/35 rounded-full px-3 py-1 sm:px-4 sm:py-1.5 text-xs text-brand-400 tracking-wide mb-6 sm:mb-8 ${anim(0.05)}`}
             style={{ transitionDelay: '0.05s' }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
@@ -141,18 +141,18 @@ export default function CTA() {
 
           {/* Titular */}
           <h2
-            className={`text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-5 leading-tight ${anim(0.15)}`}
+            className={`text-3xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-tight ${anim(0.15)}`}
             style={{ transitionDelay: '0.15s' }}
           >
-            Tu negocio merece<br className="hidden sm:block" /> estar online.
+            Tu negocio merece<br /> estar en línea.
           </h2>
 
           {/* Subtítulo */}
           <p
-            className={`text-text-secondary text-lg lg:text-xl mb-10 max-w-lg mx-auto leading-relaxed ${anim(0.28)}`}
+            className={`text-text-secondary text-base sm:text-lg lg:text-xl mb-8 sm:mb-10 max-w-lg mx-auto leading-relaxed ${anim(0.28)}`}
             style={{ transitionDelay: '0.28s' }}
           >
-            Creá tu tienda, menú o catálogo en minutos. Sin comisiones, sin técnicos, sin vueltas.
+            Creá tu tienda, menú o catálogo en minutos.<br className="hidden sm:block" /> Sin comisiones, sin técnicos, sin vueltas.
           </p>
 
           {/* Botón CTA */}
@@ -164,7 +164,7 @@ export default function CTA() {
               href={LOGIN_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-primary text-base px-10 py-4 inline-flex items-center gap-2"
+              className="btn-primary text-sm sm:text-base px-8 sm:px-10 py-3.5 sm:py-4 inline-flex items-center gap-2"
               style={{ boxShadow: '0 0 32px rgba(108,71,255,0.55), 0 0 64px rgba(108,71,255,0.22)' }}
               onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 52px rgba(108,71,255,0.75), 0 0 100px rgba(108,71,255,0.32)' }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 32px rgba(108,71,255,0.55), 0 0 64px rgba(108,71,255,0.22)' }}
@@ -175,7 +175,7 @@ export default function CTA() {
 
           {/* Fine print */}
           <p
-            className={`text-text-tertiary text-sm mt-6 transition-all duration-700 ${inView ? 'opacity-100' : 'opacity-0'}`}
+            className={`text-text-tertiary text-xs sm:text-sm mt-5 sm:mt-6 transition-all duration-700 ${inView ? 'opacity-100' : 'opacity-0'}`}
             style={{ transitionDelay: '0.58s' }}
           >
             Sin tarjeta de crédito · 14 días gratis · Cancelás cuando quieras
