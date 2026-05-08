@@ -111,7 +111,7 @@ export default function Navbar({ visible = true, onComparePlans }) {
                   onMouseLeave={() => setDropOpen(false)}
                 >
                   <button
-                    onClick={(e) => handleLink(e, link.href)}
+                    onClick={() => setDropOpen(v => !v)}
                     className="relative group flex items-center gap-1 text-text-secondary hover:text-white transition-colors duration-200 text-sm font-medium py-1"
                   >
                     {link.label}

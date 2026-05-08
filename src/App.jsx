@@ -15,16 +15,15 @@ import SplashScreen from './components/SplashScreen'
 import Checkout from './components/Checkout'
 import ComparePlans from './components/ComparePlans'
 
-const SESSION_KEY = 'cloomy_checkout'
+const SESSION_KEY         = 'cloomy_checkout'
+const COMPARE_SESSION_KEY = 'cloomy_compare'
 
 function saveCheckoutSession(plan, billing) {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify({ plan, billing }))
 }
-
 function clearCheckoutSession() {
   sessionStorage.removeItem(SESSION_KEY)
 }
-
 function loadCheckoutSession() {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY)
@@ -35,15 +34,17 @@ function loadCheckoutSession() {
 export default function App() {
   const [splashDone, setSplashDone] = useState(false)
 
-  // Restore checkout state from sessionStorage on refresh
-  const saved = loadCheckoutSession()
-  const [checkoutPlan, setCheckoutPlan] = useState(saved?.plan ?? null)
-  const [checkoutBilling, setCheckoutBilling] = useState(saved?.billing ?? 'mensual')
-  const [showCompare, setShowCompare] = useState(false)
+  // Restore state from sessionStorage on refresh
+  const saved        = loadCheckoutSession()
+  const savedCompare = sessionStorage.getItem(COMPARE_SESSION_KEY) === '1'
 
-  // Skip splash when returning from a refresh mid-checkout
+  const [checkoutPlan,    setCheckoutPlan]    = useState(saved?.plan ?? null)
+  const [checkoutBilling, setCheckoutBilling] = useState(saved?.billing ?? 'mensual')
+  const [showCompare,     setShowCompare]     = useState(savedCompare)
+
+  // Skip splash on mid-session refresh
   useEffect(() => {
-    if (saved?.plan) setSplashDone(true)
+    if (saved?.plan || savedCompare) setSplashDone(true)
   }, [])
 
   useEffect(() => {
@@ -53,11 +54,21 @@ export default function App() {
         const billing = e.state.billing
         setCheckoutPlan(plan)
         setCheckoutBilling(billing)
+        setShowCompare(false)
         saveCheckoutSession(plan, billing)
+        sessionStorage.removeItem(COMPARE_SESSION_KEY)
+        window.scrollTo({ top: 0, behavior: 'instant' })
+      } else if (e.state?.compare) {
+        setShowCompare(true)
+        setCheckoutPlan(null)
+        clearCheckoutSession()
+        sessionStorage.setItem(COMPARE_SESSION_KEY, '1')
         window.scrollTo({ top: 0, behavior: 'instant' })
       } else {
         setCheckoutPlan(null)
+        setShowCompare(false)
         clearCheckoutSession()
+        sessionStorage.removeItem(COMPARE_SESSION_KEY)
         const y = e.state?.scrollY ?? 0
         requestAnimationFrame(() => window.scrollTo({ top: y, behavior: 'instant' }))
       }
@@ -70,7 +81,9 @@ export default function App() {
     window.history.replaceState({ scrollY: window.scrollY }, '')
     setCheckoutPlan(plan)
     setCheckoutBilling(billing)
+    setShowCompare(false)
     saveCheckoutSession(plan, billing)
+    sessionStorage.removeItem(COMPARE_SESSION_KEY)
     window.history.pushState({ checkout: true, plan: JSON.stringify(plan), billing }, '')
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
@@ -81,13 +94,16 @@ export default function App() {
   }
 
   const handleComparePlans = () => {
+    window.history.replaceState({ scrollY: window.scrollY }, '')
     setShowCompare(true)
+    sessionStorage.setItem(COMPARE_SESSION_KEY, '1')
+    window.history.pushState({ compare: true }, '')
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   const handleCompareBack = () => {
-    setShowCompare(false)
-    window.scrollTo({ top: 0, behavior: 'instant' })
+    sessionStorage.removeItem(COMPARE_SESSION_KEY)
+    window.history.back()
   }
 
   if (showCompare && !checkoutPlan) {
