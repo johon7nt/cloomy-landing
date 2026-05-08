@@ -193,7 +193,9 @@ export default function Checkout({ plan, billing: initialBilling, onBack }) {
         borderBottom: '1px solid rgba(108,71,255,0.15)',
       }}>
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Logo desktopClassName="h-7 w-auto" mobileClassName="h-8 w-auto" />
+          <button onClick={onBack} className="flex items-center">
+            <Logo desktopClassName="h-7 w-auto" mobileClassName="h-8 w-auto" />
+          </button>
           <button onClick={handleHeaderBack}
             className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors text-sm font-medium">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
