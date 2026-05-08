@@ -19,12 +19,46 @@ function formatExpiry(val) {
   return digits.length >= 3 ? `${digits.slice(0,2)}/${digits.slice(2)}` : digits
 }
 
-function StoreIcon() {
+const PLAN_ICONS = {
+  trial: {
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    bg: 'rgba(34,197,94,0.18)',
+    border: '1px solid rgba(34,197,94,0.4)',
+    color: 'rgb(74,222,128)',
+  },
+  basic: {
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+    bg: 'rgba(59,130,246,0.18)',
+    border: '1px solid rgba(59,130,246,0.4)',
+    color: 'rgb(96,165,250)',
+  },
+  pro: {
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+      </svg>
+    ),
+    bg: 'rgba(108,71,255,0.2)',
+    border: '1px solid rgba(108,71,255,0.4)',
+    color: 'rgb(167,139,250)',
+  },
+}
+
+function PlanIcon({ planId }) {
+  const cfg = PLAN_ICONS[planId] ?? PLAN_ICONS.basic
   return (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 22V12h6v10" />
-    </svg>
+    <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+      style={{ background: cfg.bg, border: cfg.border, color: cfg.color }}>
+      {cfg.icon}
+    </div>
   )
 }
 
@@ -250,10 +284,7 @@ export default function Checkout({ plan, billing: initialBilling, onBack }) {
               /* STEP 1: Cart */
               <div className="rounded-2xl overflow-hidden" style={CARD_STYLE}>
                 <div className="flex items-center gap-4 p-6 border-b border-white/10">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ background: 'rgba(108,71,255,0.2)', border: '1px solid rgba(108,71,255,0.4)' }}>
-                    <StoreIcon />
-                  </div>
+                  <PlanIcon planId={plan.id} />
                   <div>
                     <div className="font-bold text-white text-lg">Plan {plan.name}</div>
                     <div className="text-sm text-text-secondary">{plan.description}</div>
