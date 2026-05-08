@@ -20,18 +20,30 @@ export default function App() {
   const [checkoutBilling, setCheckoutBilling] = useState('mensual')
 
   useEffect(() => {
-    const onPopState = () => {
-      setCheckoutPlan(null)
-      window.scrollTo({ top: 0, behavior: 'instant' })
+    const onPopState = (e) => {
+      if (e.state?.checkout) {
+        // Forward → restore checkout
+        setCheckoutPlan(JSON.parse(e.state.plan))
+        setCheckoutBilling(e.state.billing)
+        window.scrollTo({ top: 0, behavior: 'instant' })
+      } else {
+        // Back → restore landing at saved scroll position
+        setCheckoutPlan(null)
+        const y = e.state?.scrollY ?? 0
+        // defer so React finishes re-rendering the landing before scrolling
+        requestAnimationFrame(() => window.scrollTo({ top: y, behavior: 'instant' }))
+      }
     }
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
   const handleSelectPlan = (plan, billing) => {
+    // Save current scroll position in this history entry before pushing checkout
+    window.history.replaceState({ scrollY: window.scrollY }, '')
     setCheckoutPlan(plan)
     setCheckoutBilling(billing)
-    window.history.pushState({ checkout: true }, '')
+    window.history.pushState({ checkout: true, plan: JSON.stringify(plan), billing }, '')
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
