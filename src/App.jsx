@@ -12,9 +12,43 @@ import FAQ from './components/FAQ'
 import CTA from './components/CTA'
 import Footer from './components/Footer'
 import SplashScreen from './components/SplashScreen'
+import Checkout from './components/Checkout'
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false)
+  const [checkoutPlan, setCheckoutPlan] = useState(null)
+  const [checkoutBilling, setCheckoutBilling] = useState('mensual')
+
+  const handleSelectPlan = (plan, billing) => {
+    setCheckoutPlan(plan)
+    setCheckoutBilling(billing)
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
+  const handleBack = () => {
+    setCheckoutPlan(null)
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
+  if (checkoutPlan) {
+    return (
+      <>
+        {/* Same atmospheric background */}
+        <div className="fixed inset-0 pointer-events-none z-0" aria-hidden>
+          <div className="absolute inset-0">
+            <div style={{ position:'absolute', top:'-10%', left:'-5%', width:'65vw', height:'65vw', borderRadius:'50%', background:'radial-gradient(circle at 38% 38%, #7C5CFF 0%, #6C47FF 25%, #4B2ECC 55%, transparent 72%)', filter:'blur(80px)', opacity:0.45 }} />
+            <div style={{ position:'absolute', top:'18%', right:'-12%', width:'52vw', height:'52vw', borderRadius:'50%', background:'radial-gradient(circle at 50% 45%, #8B6FFF 0%, #5A38F5 30%, #3D25CC 60%, transparent 75%)', filter:'blur(90px)', opacity:0.35 }} />
+            <div style={{ position:'absolute', bottom:'-15%', left:'22%', width:'58vw', height:'58vw', borderRadius:'50%', background:'radial-gradient(circle at 50% 50%, #5A38F5 0%, #4B2ECC 35%, #2D1C99 65%, transparent 75%)', filter:'blur(100px)', opacity:0.38 }} />
+          </div>
+          <div style={{ position:'absolute', inset:0, backdropFilter:'blur(72px)', WebkitBackdropFilter:'blur(72px)' }} />
+          <div style={{ position:'absolute', inset:0, background:'rgba(10,10,20,0.62)' }} />
+        </div>
+        <div className="relative z-10">
+          <Checkout plan={checkoutPlan} billing={checkoutBilling} onBack={handleBack} />
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
@@ -97,7 +131,7 @@ export default function App() {
           <AllFeatures />
           <Demo />
           {/* <Testimonials /> */}
-          <Pricing />
+          <Pricing onSelectPlan={handleSelectPlan} />
           <FAQ />
           <CTA />
         </main>

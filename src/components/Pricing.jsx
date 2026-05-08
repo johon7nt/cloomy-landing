@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useInView } from '../hooks/useInView'
 
-function PlanCardContent({ plan, billing }) {
+function PlanCardContent({ plan, billing, onSelectPlan }) {
   return (
     <div
       className="h-full p-7 rounded-2xl flex flex-col"
@@ -32,15 +32,31 @@ function PlanCardContent({ plan, billing }) {
         </div>
       </div>
 
-      <button
-        className={`w-full rounded-xl py-3 font-semibold text-sm mb-6 transition-colors duration-300 ${
-          plan.highlight
-            ? 'bg-brand-500 text-white hover:bg-brand-600'
-            : 'border border-white/20 text-white hover:border-brand-500/70 hover:bg-brand-500/10'
-        }`}
-      >
-        {plan.cta} →
-      </button>
+      {plan.href ? (
+        <a
+          href={plan.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`block w-full text-center rounded-xl py-3 font-semibold text-sm mb-6 transition-colors duration-300 ${
+            plan.highlight
+              ? 'bg-brand-500 text-white hover:bg-brand-600'
+              : 'border border-white/20 text-white hover:border-brand-500/70 hover:bg-brand-500/10'
+          }`}
+        >
+          {plan.cta} →
+        </a>
+      ) : (
+        <button
+          onClick={() => onSelectPlan?.(plan, billing)}
+          className={`w-full rounded-xl py-3 font-semibold text-sm mb-6 transition-colors duration-300 ${
+            plan.highlight
+              ? 'bg-brand-500 text-white hover:bg-brand-600'
+              : 'border border-white/20 text-white hover:border-brand-500/70 hover:bg-brand-500/10'
+          }`}
+        >
+          {plan.cta} →
+        </button>
+      )}
 
       <ul className="space-y-3 flex-grow">
         {plan.features.map((f) => (
@@ -56,7 +72,7 @@ function PlanCardContent({ plan, billing }) {
   )
 }
 
-function PricingTabletCarousel({ billing }) {
+function PricingTabletCarousel({ billing, onSelectPlan }) {
   const [current, setCurrent] = useState(2)
   const [containerWidth, setContainerWidth] = useState(700)
   const containerRef = useRef(null)
@@ -132,7 +148,7 @@ function PricingTabletCarousel({ billing }) {
               style={getStyle(i)}
               onClick={abs === 1 ? () => goTo(i) : undefined}
             >
-              <PlanCardContent plan={plan} billing={billing} />
+              <PlanCardContent plan={plan} billing={billing} onSelectPlan={onSelectPlan} />
             </div>
           )
         })}
@@ -177,6 +193,7 @@ const PLANS = [
     id: 'trial',
     name: 'Trial',
     price: { mensual: '$0', anual: '$0' },
+    priceNum: { mensual: 0, anual: 0 },
     period: '/14 días',
     description: 'Para probar Cloomy sin compromiso.',
     cta: 'Empezar gratis',
@@ -194,6 +211,7 @@ const PLANS = [
     id: 'basic',
     name: 'Basic',
     price: { mensual: '$12.000', anual: '$9.600' },
+    priceNum: { mensual: 12000, anual: 9600 },
     period: '/mes',
     description: 'Para negocios que recién arrancan.',
     cta: 'Elegir Basic',
@@ -211,6 +229,7 @@ const PLANS = [
     id: 'pro',
     name: 'Pro',
     price: { mensual: '$24.000', anual: '$19.200' },
+    priceNum: { mensual: 24000, anual: 19200 },
     period: '/mes',
     description: 'Para negocios que quieren más.',
     cta: 'Elegir Pro',
@@ -234,7 +253,7 @@ function CheckIcon() {
   )
 }
 
-function PlanCard({ plan, billing, index }) {
+function PlanCard({ plan, billing, index, onSelectPlan }) {
   const [ref, inView] = useInView(0.15)
   return (
     <div
@@ -299,6 +318,7 @@ function PlanCard({ plan, billing, index }) {
         </a>
       ) : (
         <button
+          onClick={() => onSelectPlan?.(plan, billing)}
           className={`w-full rounded-xl py-3 font-semibold text-sm mb-8 ${
             plan.highlight
               ? 'bg-brand-500 text-white hover:bg-brand-600'
@@ -328,7 +348,7 @@ function PlanCard({ plan, billing, index }) {
   )
 }
 
-export default function Pricing() {
+export default function Pricing({ onSelectPlan }) {
   const [billing, setBilling] = useState('anual')
   const [headingRef, headingInView] = useInView(0.2)
   const [typed, setTyped] = useState(0)
@@ -426,17 +446,17 @@ export default function Pricing() {
         {/* Cards — mobile: columna; tablet: cover-flow; desktop: grid */}
         <div className="md:hidden grid gap-4">
           {PLANS.map((plan, i) => (
-            <PlanCard key={plan.id} plan={plan} billing={billing} index={i} />
+            <PlanCard key={plan.id} plan={plan} billing={billing} index={i} onSelectPlan={onSelectPlan} />
           ))}
         </div>
 
         <div className="hidden md:block lg:hidden -mx-6 overflow-hidden">
-          <PricingTabletCarousel billing={billing} />
+          <PricingTabletCarousel billing={billing} onSelectPlan={onSelectPlan} />
         </div>
 
         <div className="hidden lg:grid lg:grid-cols-3 gap-4">
           {PLANS.map((plan, i) => (
-            <PlanCard key={plan.id} plan={plan} billing={billing} index={i} />
+            <PlanCard key={plan.id} plan={plan} billing={billing} index={i} onSelectPlan={onSelectPlan} />
           ))}
         </div>
       </div>
