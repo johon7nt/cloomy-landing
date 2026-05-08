@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import InfiniteBand from './components/InfiniteBand'
@@ -19,15 +19,24 @@ export default function App() {
   const [checkoutPlan, setCheckoutPlan] = useState(null)
   const [checkoutBilling, setCheckoutBilling] = useState('mensual')
 
+  useEffect(() => {
+    const onPopState = () => {
+      setCheckoutPlan(null)
+      window.scrollTo({ top: 0, behavior: 'instant' })
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
   const handleSelectPlan = (plan, billing) => {
     setCheckoutPlan(plan)
     setCheckoutBilling(billing)
+    window.history.pushState({ checkout: true }, '')
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   const handleBack = () => {
-    setCheckoutPlan(null)
-    window.scrollTo({ top: 0, behavior: 'instant' })
+    window.history.back()
   }
 
   if (checkoutPlan) {
