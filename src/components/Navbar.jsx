@@ -107,8 +107,6 @@ export default function Navbar({ visible = true, onComparePlans }) {
                   key={link.href}
                   ref={dropRef}
                   className="relative"
-                  onMouseEnter={() => setDropOpen(true)}
-                  onMouseLeave={() => setDropOpen(false)}
                 >
                   <button
                     onClick={() => setDropOpen(v => !v)}

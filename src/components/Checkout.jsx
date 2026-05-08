@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Logo from './Logo'
+import PageTransition from './PageTransition'
 
 const PERIOD_OPTIONS = [
   { value: 'mensual', label: '1 mes',    months: 1,  discount: 0    },
@@ -219,6 +220,7 @@ export default function Checkout({ plan, billing: initialBilling, onBack }) {
 
   return (
     <>
+      <PageTransition />
       {/* ── Top bar ── */}
       <header className="fixed top-0 left-0 right-0 z-50" style={{
         backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',

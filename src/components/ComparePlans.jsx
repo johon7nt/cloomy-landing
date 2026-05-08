@@ -1,4 +1,5 @@
 import Logo from './Logo'
+import PageTransition from './PageTransition'
 
 const PLANS_META = [
   { id: 'trial', name: 'Trial',  price: 'Gratis',     period: '14 días',  highlight: false },
@@ -88,6 +89,7 @@ export default function ComparePlans({ onBack, onSelectPlan }) {
 
   return (
     <>
+      <PageTransition />
       {/* ── Top bar ── */}
       <header className="fixed top-0 left-0 right-0 z-50" style={{
         backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
