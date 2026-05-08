@@ -14,23 +14,49 @@ import Footer from './components/Footer'
 import SplashScreen from './components/SplashScreen'
 import Checkout from './components/Checkout'
 
+const SESSION_KEY = 'cloomy_checkout'
+
+function saveCheckoutSession(plan, billing) {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ plan, billing }))
+}
+
+function clearCheckoutSession() {
+  sessionStorage.removeItem(SESSION_KEY)
+}
+
+function loadCheckoutSession() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch { return null }
+}
+
 export default function App() {
   const [splashDone, setSplashDone] = useState(false)
-  const [checkoutPlan, setCheckoutPlan] = useState(null)
-  const [checkoutBilling, setCheckoutBilling] = useState('mensual')
+
+  // Restore checkout state from sessionStorage on refresh
+  const saved = loadCheckoutSession()
+  const [checkoutPlan, setCheckoutPlan] = useState(saved?.plan ?? null)
+  const [checkoutBilling, setCheckoutBilling] = useState(saved?.billing ?? 'mensual')
+
+  // Skip splash when returning from a refresh mid-checkout
+  useEffect(() => {
+    if (saved?.plan) setSplashDone(true)
+  }, [])
 
   useEffect(() => {
     const onPopState = (e) => {
       if (e.state?.checkout) {
-        // Forward → restore checkout
-        setCheckoutPlan(JSON.parse(e.state.plan))
-        setCheckoutBilling(e.state.billing)
+        const plan    = JSON.parse(e.state.plan)
+        const billing = e.state.billing
+        setCheckoutPlan(plan)
+        setCheckoutBilling(billing)
+        saveCheckoutSession(plan, billing)
         window.scrollTo({ top: 0, behavior: 'instant' })
       } else {
-        // Back → restore landing at saved scroll position
         setCheckoutPlan(null)
+        clearCheckoutSession()
         const y = e.state?.scrollY ?? 0
-        // defer so React finishes re-rendering the landing before scrolling
         requestAnimationFrame(() => window.scrollTo({ top: y, behavior: 'instant' }))
       }
     }
@@ -39,15 +65,16 @@ export default function App() {
   }, [])
 
   const handleSelectPlan = (plan, billing) => {
-    // Save current scroll position in this history entry before pushing checkout
     window.history.replaceState({ scrollY: window.scrollY }, '')
     setCheckoutPlan(plan)
     setCheckoutBilling(billing)
+    saveCheckoutSession(plan, billing)
     window.history.pushState({ checkout: true, plan: JSON.stringify(plan), billing }, '')
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   const handleBack = () => {
+    clearCheckoutSession()
     window.history.back()
   }
 

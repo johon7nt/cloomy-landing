@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Logo from './Logo'
 
 const PERIOD_OPTIONS = [
@@ -133,8 +133,25 @@ function OrderSummary({ plan, period, unitPrice, total, showCoupon, setShowCoupo
   )
 }
 
+const SESSION_KEY = 'cloomy_checkout'
+
+function getPersistedStep() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY)
+    return raw ? (JSON.parse(raw).step ?? 1) : 1
+  } catch { return 1 }
+}
+
+function persistStep(step) {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY)
+    const data = raw ? JSON.parse(raw) : {}
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ...data, step }))
+  } catch {}
+}
+
 export default function Checkout({ plan, billing: initialBilling, onBack }) {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(getPersistedStep)
   const [billing, setBilling] = useState(
     PERIOD_OPTIONS.find(p => p.value === initialBilling) ? initialBilling : 'mensual'
   )
@@ -154,8 +171,16 @@ export default function Checkout({ plan, billing: initialBilling, onBack }) {
 
   const payUrl = 'https://cloomybuild-production.up.railway.app/login'
 
+  useEffect(() => { persistStep(step) }, [step])
+
+  const goToStep = (n) => {
+    setStep(n)
+    persistStep(n)
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
   const handleHeaderBack = () => {
-    if (step === 2) { setStep(1); window.scrollTo({ top: 0, behavior: 'instant' }) }
+    if (step === 2) goToStep(1)
     else onBack()
   }
 
@@ -305,7 +330,7 @@ export default function Checkout({ plan, billing: initialBilling, onBack }) {
                   )}
 
                   <button
-                    onClick={() => { setStep(2); window.scrollTo({ top: 0, behavior: 'instant' }) }}
+                    onClick={() => goToStep(2)}
                     className="btn-primary w-full justify-center text-base py-4 rounded-xl mt-8"
                     style={{ boxShadow: '0 0 24px rgba(108,71,255,0.5), 0 0 48px rgba(108,71,255,0.2)' }}
                     onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 36px rgba(108,71,255,0.7), 0 0 72px rgba(108,71,255,0.3)' }}
