@@ -96,12 +96,11 @@ function OrderSummary({ plan, period, unitPrice, total, showCoupon, setShowCoupo
       </div>
 
       <div className="mb-5">
-        {!showCoupon ? (
-          <button onClick={() => setShowCoupon(true)}
-            className="text-sm text-brand-400 hover:text-brand-300 transition-colors">
-            ¿Tenés un cupón de descuento?
-          </button>
-        ) : (
+        <button onClick={() => setShowCoupon(v => !v)}
+          className="text-sm text-brand-400 hover:text-brand-300 transition-colors mb-2">
+          {showCoupon ? 'Cerrar cupón ✕' : '¿Tenés un cupón de descuento?'}
+        </button>
+        {showCoupon && (
           <div className="flex gap-2">
             <input type="text" value={coupon} onChange={e => setCoupon(e.target.value)}
               placeholder="Código de cupón"
