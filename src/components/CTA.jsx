@@ -57,8 +57,8 @@ export default function CTA() {
           transition: 'opacity 0.08s linear',
         }}
       />
-    <section ref={sectionRef} className="section-divider py-20 lg:py-28 overflow-hidden" style={{ position: 'relative', zIndex: 12 }}>
-      <div className="max-w-4xl mx-auto px-6">
+    <section ref={sectionRef} className="section-divider overflow-hidden flex items-center" style={{ position: 'relative', zIndex: 12, minHeight: '100vh' }}>
+      <div className="max-w-4xl mx-auto px-6 w-full py-20">
         <div
           ref={ref}
           className="relative rounded-3xl text-center px-8 py-16 lg:px-16 lg:py-20 overflow-hidden"
