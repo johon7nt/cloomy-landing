@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { useInView } from '../hooks/useInView'
 
 const LOGIN_URL = 'https://cloomybuild-production.up.railway.app/login'
@@ -15,12 +16,48 @@ const DOTS = [
 
 export default function CTA() {
   const [ref, inView] = useInView(0.25)
+  const sectionRef = useRef(null)
+  const [overlayOpacity, setOverlayOpacity] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const el = sectionRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      const sectionH = el.offsetHeight
+      // t goes 0→1 as section travels from entering to leaving viewport
+      const totalTravel = vh + sectionH
+      const traveled = vh - rect.top
+      const t = Math.max(0, Math.min(1, traveled / totalTravel))
+      // bell curve: peaks at t=0.5 (section centered in viewport)
+      const bell = 1 - Math.abs(t - 0.5) * 2
+      setOverlayOpacity(Math.max(0, bell) * 0.62)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const anim = (delay, extra = '') =>
     `transition-all duration-700 ${extra} ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
 
   return (
-    <section className="section-divider py-20 lg:py-28 overflow-hidden">
+    <>
+      {/* Dark overlay — fixed behind content, fades in/out as section scrolls through viewport */}
+      <div
+        aria-hidden
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.72)',
+          opacity: overlayOpacity,
+          pointerEvents: 'none',
+          zIndex: 11,
+          transition: 'opacity 0.08s linear',
+        }}
+      />
+    <section ref={sectionRef} className="section-divider py-20 lg:py-28 overflow-hidden" style={{ position: 'relative', zIndex: 12 }}>
       <div className="max-w-4xl mx-auto px-6">
         <div
           ref={ref}
@@ -157,5 +194,6 @@ export default function CTA() {
         }
       `}</style>
     </section>
+    </>
   )
 }
