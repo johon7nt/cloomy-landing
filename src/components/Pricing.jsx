@@ -180,6 +180,7 @@ const PLANS = [
     period: '/14 días',
     description: 'Para probar Cloomy sin compromiso.',
     cta: 'Empezar gratis',
+    href: 'https://cloomybuild-production.up.railway.app/login',
     ctaStyle: 'outline',
     features: [
       'Hasta 10 productos',
@@ -280,18 +281,36 @@ function PlanCard({ plan, billing, index }) {
         </div>
       </div>
 
-      <button
-        className={`w-full rounded-xl py-3 font-semibold text-sm mb-8 ${
-          plan.highlight
-            ? 'bg-brand-500 text-white hover:bg-brand-600'
-            : 'border border-white/20 text-white hover:border-brand-500/70 hover:bg-brand-500/10'
-        }`}
-        style={{ transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s' }}
-        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 22px rgba(108,71,255,0.45)' }}
-        onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
-      >
-        {plan.cta} →
-      </button>
+      {plan.href ? (
+        <a
+          href={plan.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`block w-full text-center rounded-xl py-3 font-semibold text-sm mb-8 ${
+            plan.highlight
+              ? 'bg-brand-500 text-white hover:bg-brand-600'
+              : 'border border-white/20 text-white hover:border-brand-500/70 hover:bg-brand-500/10'
+          }`}
+          style={{ transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s' }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 22px rgba(108,71,255,0.45)' }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
+        >
+          {plan.cta} →
+        </a>
+      ) : (
+        <button
+          className={`w-full rounded-xl py-3 font-semibold text-sm mb-8 ${
+            plan.highlight
+              ? 'bg-brand-500 text-white hover:bg-brand-600'
+              : 'border border-white/20 text-white hover:border-brand-500/70 hover:bg-brand-500/10'
+          }`}
+          style={{ transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s' }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 22px rgba(108,71,255,0.45)' }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
+        >
+          {plan.cta} →
+        </button>
+      )}
 
       <ul className="space-y-3">
         {plan.features.map((f) => (

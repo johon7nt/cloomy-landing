@@ -147,7 +147,7 @@ export default function Hero() {
               }`}
               style={{ transitionDelay: done ? '150ms' : '0ms' }}
             >
-              <a href="#pricing" className="btn-primary text-base px-8 py-4">
+              <a href="https://cloomybuild-production.up.railway.app/login" target="_blank" rel="noopener noreferrer" className="btn-primary text-base px-8 py-4">
                 Probar 14 días gratis →
               </a>
               <a href="#how-it-works" className="btn-outline text-base px-8 py-4">

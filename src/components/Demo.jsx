@@ -497,7 +497,7 @@ export default function Demo() {
 
                   <div className={`flex ${currentStep === 4 ? 'justify-center' : 'justify-start lg:justify-end'}`}>
                     {currentStep === 4 ? (
-                      <a href="#pricing" className="btn-primary">Empezar gratis →</a>
+                      <a href="https://cloomybuild-production.up.railway.app/login" target="_blank" rel="noopener noreferrer" className="btn-primary">Empezar gratis →</a>
                     ) : (
                       <button onClick={handleNext} className="btn-primary">Siguiente →</button>
                     )}

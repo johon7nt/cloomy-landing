@@ -99,8 +99,9 @@ export default function Navbar({ visible = true }) {
           </nav>
 
           <a
-            href="#pricing"
-            onClick={(e) => handleLink(e, '#pricing')}
+            href="https://cloomybuild-production.up.railway.app/login"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hidden lg:inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm"
             style={{
               boxShadow: '0 0 16px rgba(108,71,255,0.4), 0 0 32px rgba(108,71,255,0.15)',
@@ -179,8 +180,9 @@ export default function Navbar({ visible = true }) {
         {/* CTA */}
         <div className="px-5 pb-8 shrink-0">
           <a
-            href="#pricing"
-            onClick={(e) => handleLink(e, '#pricing')}
+            href="https://cloomybuild-production.up.railway.app/login"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white w-full py-3 rounded-xl font-semibold text-sm transition-colors"
             style={{ boxShadow: '0 0 16px rgba(108,71,255,0.4), 0 0 32px rgba(108,71,255,0.15)' }}
           >
