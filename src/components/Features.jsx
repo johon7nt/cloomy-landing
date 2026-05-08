@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { useInView } from '../hooks/useInView'
 
 const TABS = [
@@ -56,8 +56,6 @@ label: 'NUEVA ENTRADA · EVENTO',
   },
 ]
 
-const TAB_IDS = TABS.map((t) => t.id)
-
 export default function Features() {
   const [active, setActive] = useState('gastro')
   const [visible, setVisible] = useState(true)
@@ -65,26 +63,9 @@ export default function Features() {
   const [headingRef, headingInView] = useInView(0.2)
   const [tabsRef, tabsInView] = useInView(0.1)
   const [cardRef, cardInView] = useInView(0.1)
-  const userSelectedRef = useRef(false)
-  const intervalRef = useRef(null)
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      if (userSelectedRef.current) return
-      setActive((prev) => {
-        const next = TAB_IDS[(TAB_IDS.indexOf(prev) + 1) % TAB_IDS.length]
-        setVisible(false)
-        setTimeout(() => setVisible(true), 180)
-        return next
-      })
-    }, 5000)
-    return () => clearInterval(intervalRef.current)
-  }, [])
 
   const handleTabChange = (id) => {
     if (id === active) return
-    userSelectedRef.current = true
-    clearInterval(intervalRef.current)
     setVisible(false)
     setTimeout(() => {
       setActive(id)
