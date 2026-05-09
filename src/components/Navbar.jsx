@@ -38,7 +38,7 @@ function scrollTo(href) {
   }
 }
 
-export default function Navbar({ visible = true, onComparePlans }) {
+export default function Navbar({ visible = true, onComparePlans, onLogoClick }) {
   const [scrolled,  setScrolled]  = useState(false)
   const [menuOpen,  setMenuOpen]  = useState(false)
   const [dropOpen,  setDropOpen]  = useState(false)
@@ -95,9 +95,15 @@ export default function Navbar({ visible = true, onComparePlans }) {
         }}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-2 shrink-0">
-            <Logo desktopClassName="h-8 w-auto" mobileClassName="h-10 w-auto" />
-          </a>
+          {onLogoClick ? (
+            <button onClick={onLogoClick} className="flex items-center gap-2 shrink-0">
+              <Logo desktopClassName="h-8 w-auto" mobileClassName="h-10 w-auto" staticEye />
+            </button>
+          ) : (
+            <a href="#" className="flex items-center gap-2 shrink-0">
+              <Logo desktopClassName="h-8 w-auto" mobileClassName="h-10 w-auto" />
+            </a>
+          )}
 
           <nav className="hidden lg:flex items-center gap-6">
             {NAV_LINKS.map((link) =>
@@ -128,13 +134,14 @@ export default function Navbar({ visible = true, onComparePlans }) {
 
                   {/* Dropdown panel */}
                   <div
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 rounded-xl overflow-hidden"
+                    className="absolute top-full mt-2 w-44 rounded-xl overflow-hidden"
                     style={{
+                      left: '50%',
                       background: 'rgba(10,10,20,0.95)',
                       border: '1px solid rgba(108,71,255,0.25)',
                       boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(108,71,255,0.1)',
                       opacity: dropOpen ? 1 : 0,
-                      transform: dropOpen ? 'translateY(0)' : 'translateY(-6px)',
+                      transform: dropOpen ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-6px)',
                       pointerEvents: dropOpen ? 'auto' : 'none',
                       transition: 'opacity 0.18s ease, transform 0.18s ease',
                     }}
@@ -241,9 +248,15 @@ export default function Navbar({ visible = true, onComparePlans }) {
         }}
       >
         <div className="flex items-center px-5 h-16 border-b border-white/10 shrink-0">
-          <a href="#" onClick={() => setMenuOpen(false)}>
-            <Logo mobileClassName="h-9 w-auto" staticEye />
-          </a>
+          {onLogoClick ? (
+            <button onClick={() => { setMenuOpen(false); onLogoClick() }}>
+              <Logo mobileClassName="h-9 w-auto" staticEye />
+            </button>
+          ) : (
+            <a href="#" onClick={() => setMenuOpen(false)}>
+              <Logo mobileClassName="h-9 w-auto" staticEye />
+            </a>
+          )}
         </div>
 
         <nav className="flex flex-col px-3 py-6 gap-1 flex-1 overflow-y-auto">

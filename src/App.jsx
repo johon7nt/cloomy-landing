@@ -78,7 +78,12 @@ export default function App() {
   }, [])
 
   const handleSelectPlan = (plan, billing) => {
-    window.history.replaceState({ scrollY: window.scrollY }, '')
+    // Only save scroll position when navigating from the landing page.
+    // If coming from ComparePlans, keep the {compare:true} history entry intact
+    // so pressing back from Checkout returns to Compare, not landing.
+    if (!showCompare && !checkoutPlan) {
+      window.history.replaceState({ scrollY: window.scrollY }, '')
+    }
     setCheckoutPlan(plan)
     setCheckoutBilling(billing)
     setShowCompare(false)
@@ -94,7 +99,10 @@ export default function App() {
   }
 
   const handleComparePlans = () => {
-    window.history.replaceState({ scrollY: window.scrollY }, '')
+    // Save current scroll before leaving landing
+    if (!showCompare && !checkoutPlan) {
+      window.history.replaceState({ scrollY: window.scrollY }, '')
+    }
     setShowCompare(true)
     sessionStorage.setItem(COMPARE_SESSION_KEY, '1')
     window.history.pushState({ compare: true }, '')
@@ -102,7 +110,7 @@ export default function App() {
   }
 
   const handleCompareBack = () => {
-    sessionStorage.removeItem(COMPARE_SESSION_KEY)
+    // Let popstate handle sessionStorage cleanup — only call back()
     window.history.back()
   }
 
@@ -118,6 +126,7 @@ export default function App() {
           <div style={{ position:'absolute', inset:0, backdropFilter:'blur(72px)', WebkitBackdropFilter:'blur(72px)' }} />
           <div style={{ position:'absolute', inset:0, background:'rgba(10,10,20,0.62)' }} />
         </div>
+        <Navbar visible onComparePlans={handleCompareBack} onLogoClick={handleCompareBack} />
         <div className="relative z-10">
           <ComparePlans
             onBack={handleCompareBack}

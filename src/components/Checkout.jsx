@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Logo from './Logo'
 import PageTransition from './PageTransition'
+import Footer from './Footer'
 
 const PERIOD_OPTIONS = [
   { value: 'mensual', label: '1 mes',    months: 1,  discount: 0    },
@@ -229,7 +230,7 @@ export default function Checkout({ plan, billing: initialBilling, onBack }) {
       }}>
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <button onClick={onBack} className="flex items-center">
-            <Logo desktopClassName="h-7 w-auto" mobileClassName="h-8 w-auto" />
+            <Logo desktopClassName="h-7 w-auto" mobileClassName="h-8 w-auto" staticEye />
           </button>
           <button onClick={handleHeaderBack}
             className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors text-sm font-medium">
@@ -242,7 +243,7 @@ export default function Checkout({ plan, billing: initialBilling, onBack }) {
       </header>
 
       {/* ── Page ── */}
-      <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6">
+      <div className="min-h-screen pt-24 pb-0 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
 
           {/* Step indicator */}
@@ -533,6 +534,8 @@ export default function Checkout({ plan, billing: initialBilling, onBack }) {
           </div>
         </div>
       </div>
+
+      <Footer />
     </>
   )
 }
