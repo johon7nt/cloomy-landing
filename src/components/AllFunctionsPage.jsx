@@ -1,10 +1,18 @@
+import { useState } from 'react'
 import PageTransition from './PageTransition'
 import Footer from './Footer'
 
+const PLAN_ORDER = { trial: 0, basic: 1, pro: 2 }
+
 const PLAN_BADGE = {
-  trial: { label: 'Trial',  bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.3)',  color: 'rgb(74,222,128)'  },
-  basic: { label: 'Basic',  bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.3)', color: 'rgb(96,165,250)'  },
-  pro:   { label: 'Pro',    bg: 'rgba(108,71,255,0.18)', border: 'rgba(108,71,255,0.45)', color: '#c4b5fd'          },
+  trial: { label: 'Trial', bg: 'rgba(34,197,94,0.12)',   bgActive: 'rgba(34,197,94,0.28)',   border: 'rgba(34,197,94,0.3)',   borderActive: 'rgba(34,197,94,0.7)',   color: 'rgb(74,222,128)',  glow: '0 0 16px rgba(34,197,94,0.5)'  },
+  basic: { label: 'Basic', bg: 'rgba(59,130,246,0.12)',   bgActive: 'rgba(59,130,246,0.28)',   border: 'rgba(59,130,246,0.3)',  borderActive: 'rgba(59,130,246,0.7)',  color: 'rgb(96,165,250)',  glow: '0 0 16px rgba(59,130,246,0.5)' },
+  pro:   { label: 'Pro',   bg: 'rgba(108,71,255,0.18)',   bgActive: 'rgba(108,71,255,0.35)',   border: 'rgba(108,71,255,0.45)', borderActive: 'rgba(108,71,255,0.85)', color: '#c4b5fd',          glow: '0 0 16px rgba(108,71,255,0.6)' },
+}
+
+// A feature is "included" when its required plan rank ≤ selected plan rank
+function isIncluded(featurePlan, activePlan) {
+  return activePlan === null || PLAN_ORDER[featurePlan] <= PLAN_ORDER[activePlan]
 }
 
 function PlanBadge({ plan }) {
@@ -98,22 +106,19 @@ const CATEGORIES = [
   },
 ]
 
-function FeatureCard({ feature }) {
+function FeatureCard({ feature, activePlan }) {
+  const included = isIncluded(feature.plan, activePlan)
+  const cfg = PLAN_BADGE[feature.plan]
+
   return (
     <div
       className="rounded-2xl p-5 flex flex-col gap-3 h-full"
       style={{
-        background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        transition: 'border-color 0.2s, background 0.2s',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'rgba(108,71,255,0.3)'
-        e.currentTarget.style.background  = 'rgba(108,71,255,0.05)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
-        e.currentTarget.style.background  = 'rgba(255,255,255,0.04)'
+        background: included && activePlan ? cfg.bgActive : 'rgba(255,255,255,0.04)',
+        border: `1px solid ${included && activePlan ? cfg.borderActive : 'rgba(255,255,255,0.08)'}`,
+        boxShadow: included && activePlan ? cfg.glow : 'none',
+        opacity: !included ? 0.3 : 1,
+        transition: 'border-color 0.25s, background 0.25s, opacity 0.25s, box-shadow 0.25s',
       }}
     >
       <div className="flex items-start justify-between gap-2">
@@ -127,7 +132,7 @@ function FeatureCard({ feature }) {
   )
 }
 
-function CategorySection({ cat }) {
+function CategorySection({ cat, activePlan }) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
@@ -145,7 +150,7 @@ function CategorySection({ cat }) {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {cat.features.map(f => (
-          <FeatureCard key={f.title} feature={f} />
+          <FeatureCard key={f.title} feature={f} activePlan={activePlan} />
         ))}
       </div>
     </div>
@@ -153,6 +158,10 @@ function CategorySection({ cat }) {
 }
 
 export default function AllFunctionsPage() {
+  const [activePlan, setActivePlan] = useState(null)
+
+  const togglePlan = (key) => setActivePlan(p => p === key ? null : key)
+
   return (
     <>
       <PageTransition />
@@ -172,22 +181,46 @@ export default function AllFunctionsPage() {
               Todo lo que necesitás para digitalizar tu negocio. Sin comisiones, sin letra chica.
             </p>
 
-            {/* Plan legend */}
-            <div className="flex flex-wrap items-center gap-3 mt-6">
-              <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Disponible desde:</span>
-              {Object.entries(PLAN_BADGE).map(([key, cfg]) => (
-                <span key={key} className="inline-flex items-center text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full"
-                  style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}>
-                  {cfg.label}
-                </span>
-              ))}
+            {/* Interactive plan filter */}
+            <div className="mt-6">
+              <p className="text-xs mb-3" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                {activePlan
+                  ? `Mostrando funciones incluidas en ${PLAN_BADGE[activePlan].label}`
+                  : 'Tocá un plan para filtrar sus funciones:'}
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                {Object.entries(PLAN_BADGE).map(([key, cfg]) => {
+                  const active = activePlan === key
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => togglePlan(key)}
+                      className="inline-flex items-center text-[11px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full transition-all duration-200"
+                      style={{
+                        background: active ? cfg.bgActive : cfg.bg,
+                        border: `1px solid ${active ? cfg.borderActive : cfg.border}`,
+                        color: cfg.color,
+                        boxShadow: active ? cfg.glow : 'none',
+                        transform: active ? 'scale(1.05)' : 'scale(1)',
+                      }}
+                    >
+                      {cfg.label}
+                      {active && (
+                        <svg className="w-3 h-3 ml-1.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
           {/* Categories */}
           <div className="space-y-14 mb-20">
             {CATEGORIES.map(cat => (
-              <CategorySection key={cat.id} cat={cat} />
+              <CategorySection key={cat.id} cat={cat} activePlan={activePlan} />
             ))}
           </div>
 
