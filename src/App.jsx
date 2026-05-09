@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import InfiniteBand from './components/InfiniteBand'
@@ -15,6 +15,8 @@ import SplashScreen from './components/SplashScreen'
 import Checkout from './components/Checkout'
 import ComparePlans from './components/ComparePlans'
 import AllFunctionsPage from './components/AllFunctionsPage'
+import PageTransition from './components/PageTransition'
+import ScrollToTop from './components/ScrollToTop'
 
 const SESSION_KEY              = 'cloomy_checkout'
 const COMPARE_SESSION_KEY      = 'cloomy_compare'
@@ -57,6 +59,8 @@ function loadCheckoutSession() {
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
+  const pendingScrollRef = useRef(null)
 
   // Restore state from sessionStorage on refresh
   const saved             = loadCheckoutSession()
@@ -121,6 +125,7 @@ export default function App() {
     if (!showCompare && !checkoutPlan && !showAllFunctions) {
       window.history.replaceState({ scrollY: window.scrollY }, '')
     }
+    setTransitioning(true)
     setShowAllFunctions(true)
     setShowCompare(false)
     sessionStorage.setItem(ALLFUNCTIONS_SESSION_KEY, '1')
@@ -154,11 +159,28 @@ export default function App() {
     window.history.back()
   }
 
+  useEffect(() => {
+    if (!checkoutPlan && !showCompare && !showAllFunctions && pendingScrollRef.current) {
+      const href = pendingScrollRef.current
+      pendingScrollRef.current = null
+      setTimeout(() => {
+        const el = document.querySelector(href)
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+      }, 120)
+    }
+  }, [checkoutPlan, showCompare, showAllFunctions])
+
+  const handleGoHome = (sectionHref) => {
+    pendingScrollRef.current = sectionHref
+    window.history.back()
+  }
+
   const handleComparePlans = () => {
     // Save current scroll before leaving landing
     if (!showCompare && !checkoutPlan) {
       window.history.replaceState({ scrollY: window.scrollY }, '')
     }
+    setTransitioning(true)
     setShowCompare(true)
     sessionStorage.setItem(COMPARE_SESSION_KEY, '1')
     window.history.pushState({ compare: true }, '')
@@ -174,10 +196,12 @@ export default function App() {
     return (
       <>
         <AtmosphericBg />
-        <Navbar visible onComparePlans={handleComparePlans} onAllFeatures={handleAllFunctionsBack} onLogoClick={handleAllFunctionsBack} />
+        <Navbar visible={!transitioning} onComparePlans={handleComparePlans} onAllFeatures={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onLogoClick={handleAllFunctionsBack} onGoHome={handleGoHome} />
         <div className="relative z-10">
           <AllFunctionsPage />
         </div>
+        {transitioning && <PageTransition onDone={() => setTransitioning(false)} />}
+        <ScrollToTop />
       </>
     )
   }
@@ -186,7 +210,7 @@ export default function App() {
     return (
       <>
         <AtmosphericBg />
-        <Navbar visible onComparePlans={handleCompareBack} onAllFeatures={handleShowAllFunctions} onLogoClick={handleCompareBack} />
+        <Navbar visible={!transitioning} onComparePlans={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onAllFeatures={handleShowAllFunctions} onLogoClick={handleCompareBack} onGoHome={handleGoHome} />
         <div className="relative z-10">
           <ComparePlans
             onBack={handleCompareBack}
@@ -196,6 +220,8 @@ export default function App() {
             }}
           />
         </div>
+        {transitioning && <PageTransition onDone={() => setTransitioning(false)} />}
+        <ScrollToTop />
       </>
     )
   }
@@ -207,6 +233,7 @@ export default function App() {
         <div className="relative z-10">
           <Checkout plan={checkoutPlan} billing={checkoutBilling} onBack={handleBack} />
         </div>
+        <ScrollToTop />
       </>
     )
   }
@@ -240,6 +267,7 @@ export default function App() {
         </main>
         <Footer />
       </div>
+      <ScrollToTop />
     </>
   )
 }

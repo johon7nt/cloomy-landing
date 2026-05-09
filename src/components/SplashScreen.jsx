@@ -27,7 +27,7 @@ export default function SplashScreen({ onDone }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-bg-page flex items-center justify-center"
+      className="fixed inset-0 z-[200] bg-bg-page flex items-center justify-center"
       style={{
         opacity: fading ? 0 : 1,
         transition: fading ? 'opacity 0.55s ease-in' : 'none',

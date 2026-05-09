@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Logo from './Logo'
 
-export default function PageTransition() {
+export default function PageTransition({ onDone }) {
   const [phase, setPhase] = useState('in')  // 'in' | 'out'
   const [gone,  setGone]  = useState(false)
 
@@ -15,7 +15,7 @@ export default function PageTransition() {
   return (
     <div
       aria-hidden
-      onTransitionEnd={() => { if (phase === 'out') setGone(true) }}
+      onTransitionEnd={() => { if (phase === 'out') { setGone(true); onDone?.() } }}
       style={{
         position: 'fixed', inset: 0, zIndex: 200,
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 28,

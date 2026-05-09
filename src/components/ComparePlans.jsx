@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import PageTransition from './PageTransition'
+import CTA from './CTA'
 import Footer from './Footer'
 
 const LOGIN_URL = 'https://cloomybuild-production.up.railway.app/login'
@@ -346,8 +346,6 @@ export default function ComparePlans({ onBack, onSelectPlan }) {
 
   return (
     <>
-      <PageTransition />
-
       {/* Page */}
       <div className="min-h-screen pt-24 pb-0 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
@@ -478,6 +476,7 @@ export default function ComparePlans({ onBack, onSelectPlan }) {
         </div>
       </div>
 
+      <CTA />
       <Footer />
     </>
   )

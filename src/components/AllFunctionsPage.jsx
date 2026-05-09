@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import PageTransition from './PageTransition'
+import CTA from './CTA'
 import Footer from './Footer'
 
 const PLAN_ORDER = { trial: 0, basic: 1, pro: 2 }
@@ -164,8 +164,6 @@ export default function AllFunctionsPage() {
 
   return (
     <>
-      <PageTransition />
-
       <div className="min-h-screen pt-24 pb-0 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
 
@@ -224,34 +222,10 @@ export default function AllFunctionsPage() {
             ))}
           </div>
 
-          {/* Bottom CTA */}
-          <div className="rounded-2xl p-8 sm:p-10 mb-16 text-center"
-            style={{
-              background: 'rgba(108,71,255,0.1)',
-              border: '1px solid rgba(108,71,255,0.25)',
-            }}>
-            <h3 className="text-2xl sm:text-3xl font-black text-white mb-3">
-              ¿Listo para empezar?
-            </h3>
-            <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.55)' }}>
-              14 días gratis, sin tarjeta. Cancelás cuando quieras.
-            </p>
-            <a
-              href="https://cloomybuild-production.up.railway.app/login"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-8 py-3.5 rounded-xl font-semibold text-sm transition-colors duration-200"
-              style={{ boxShadow: '0 0 24px rgba(108,71,255,0.5)' }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 36px rgba(108,71,255,0.7)' }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 24px rgba(108,71,255,0.5)' }}
-            >
-              Empezar gratis →
-            </a>
-          </div>
-
         </div>
       </div>
 
+      <CTA />
       <Footer />
     </>
   )

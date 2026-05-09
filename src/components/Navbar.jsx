@@ -6,7 +6,7 @@ const NAV_LINKS = [
   {
     label: 'Funciones',            href: '#all-features',
     submenu: [
-      { label: 'Casos de uso',        href: '#features',    icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z' },
+      { label: 'Ver funciones',       href: '#all-features', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
       { label: 'Todas las funciones', action: 'allfeatures', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
     ],
   },
@@ -44,7 +44,7 @@ function scrollTo(href) {
   }
 }
 
-export default function Navbar({ visible = true, onComparePlans, onAllFeatures, onLogoClick }) {
+export default function Navbar({ visible = true, onComparePlans, onAllFeatures, onLogoClick, onGoHome }) {
   const [scrolled,  setScrolled]  = useState(false)
   const [menuOpen,  setMenuOpen]  = useState(false)
   const [dropOpen,  setDropOpen]  = useState(null)   // null | link.href
@@ -71,6 +71,11 @@ export default function Navbar({ visible = true, onComparePlans, onAllFeatures, 
   const handleLink = (e, href) => {
     e.preventDefault()
     setDropOpen(null)
+    if (!document.querySelector(href) && onGoHome) {
+      setMenuOpen(false)
+      onGoHome(href)
+      return
+    }
     if (menuOpen) {
       setMenuOpen(false)
       setTimeout(() => scrollTo(href), 370)
@@ -92,8 +97,8 @@ export default function Navbar({ visible = true, onComparePlans, onAllFeatures, 
       <header
         className="fixed top-0 left-0 right-0 z-50"
         style={{
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
+          backdropFilter: visible ? 'blur(16px)' : 'none',
+          WebkitBackdropFilter: visible ? 'blur(16px)' : 'none',
           background: scrolled ? 'rgba(10, 10, 20, 0.75)' : 'rgba(10, 10, 20, 0.35)',
           borderBottom: scrolled ? '1px solid rgba(108, 71, 255, 0.15)' : '1px solid transparent',
           opacity: visible ? 1 : 0,
