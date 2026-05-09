@@ -14,9 +14,11 @@ import Footer from './components/Footer'
 import SplashScreen from './components/SplashScreen'
 import Checkout from './components/Checkout'
 import ComparePlans from './components/ComparePlans'
+import AllFunctionsPage from './components/AllFunctionsPage'
 
-const SESSION_KEY         = 'cloomy_checkout'
-const COMPARE_SESSION_KEY = 'cloomy_compare'
+const SESSION_KEY            = 'cloomy_checkout'
+const COMPARE_SESSION_KEY    = 'cloomy_compare'
+const ALLFUNCTIONS_SESSION_KEY = 'cloomy_allfunctions'
 
 function saveCheckoutSession(plan, billing) {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify({ plan, billing }))
@@ -35,16 +37,18 @@ export default function App() {
   const [splashDone, setSplashDone] = useState(false)
 
   // Restore state from sessionStorage on refresh
-  const saved        = loadCheckoutSession()
-  const savedCompare = sessionStorage.getItem(COMPARE_SESSION_KEY) === '1'
+  const saved             = loadCheckoutSession()
+  const savedCompare      = sessionStorage.getItem(COMPARE_SESSION_KEY) === '1'
+  const savedAllFunctions = sessionStorage.getItem(ALLFUNCTIONS_SESSION_KEY) === '1'
 
   const [checkoutPlan,    setCheckoutPlan]    = useState(saved?.plan ?? null)
   const [checkoutBilling, setCheckoutBilling] = useState(saved?.billing ?? 'mensual')
   const [showCompare,     setShowCompare]     = useState(savedCompare)
+  const [showAllFunctions, setShowAllFunctions] = useState(savedAllFunctions)
 
   // Skip splash on mid-session refresh
   useEffect(() => {
-    if (saved?.plan || savedCompare) setSplashDone(true)
+    if (saved?.plan || savedCompare || savedAllFunctions) setSplashDone(true)
   }, [])
 
   useEffect(() => {
@@ -55,20 +59,34 @@ export default function App() {
         setCheckoutPlan(plan)
         setCheckoutBilling(billing)
         setShowCompare(false)
+        setShowAllFunctions(false)
         saveCheckoutSession(plan, billing)
         sessionStorage.removeItem(COMPARE_SESSION_KEY)
+        sessionStorage.removeItem(ALLFUNCTIONS_SESSION_KEY)
         window.scrollTo({ top: 0, behavior: 'instant' })
       } else if (e.state?.compare) {
         setShowCompare(true)
         setCheckoutPlan(null)
+        setShowAllFunctions(false)
         clearCheckoutSession()
         sessionStorage.setItem(COMPARE_SESSION_KEY, '1')
+        sessionStorage.removeItem(ALLFUNCTIONS_SESSION_KEY)
+        window.scrollTo({ top: 0, behavior: 'instant' })
+      } else if (e.state?.allfunctions) {
+        setShowAllFunctions(true)
+        setShowCompare(false)
+        setCheckoutPlan(null)
+        clearCheckoutSession()
+        sessionStorage.removeItem(COMPARE_SESSION_KEY)
+        sessionStorage.setItem(ALLFUNCTIONS_SESSION_KEY, '1')
         window.scrollTo({ top: 0, behavior: 'instant' })
       } else {
         setCheckoutPlan(null)
         setShowCompare(false)
+        setShowAllFunctions(false)
         clearCheckoutSession()
         sessionStorage.removeItem(COMPARE_SESSION_KEY)
+        sessionStorage.removeItem(ALLFUNCTIONS_SESSION_KEY)
         const y = e.state?.scrollY ?? 0
         requestAnimationFrame(() => window.scrollTo({ top: y, behavior: 'instant' }))
       }
@@ -77,11 +95,27 @@ export default function App() {
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
+  const handleShowAllFunctions = () => {
+    if (!showCompare && !checkoutPlan && !showAllFunctions) {
+      window.history.replaceState({ scrollY: window.scrollY }, '')
+    }
+    setShowAllFunctions(true)
+    setShowCompare(false)
+    sessionStorage.setItem(ALLFUNCTIONS_SESSION_KEY, '1')
+    sessionStorage.removeItem(COMPARE_SESSION_KEY)
+    window.history.pushState({ allfunctions: true }, '')
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
+  const handleAllFunctionsBack = () => {
+    window.history.back()
+  }
+
   const handleSelectPlan = (plan, billing) => {
     // Only save scroll position when navigating from the landing page.
     // If coming from ComparePlans, keep the {compare:true} history entry intact
     // so pressing back from Checkout returns to Compare, not landing.
-    if (!showCompare && !checkoutPlan) {
+    if (!showCompare && !checkoutPlan && !showAllFunctions) {
       window.history.replaceState({ scrollY: window.scrollY }, '')
     }
     setCheckoutPlan(plan)
@@ -114,6 +148,26 @@ export default function App() {
     window.history.back()
   }
 
+  if (showAllFunctions && !checkoutPlan && !showCompare) {
+    return (
+      <>
+        <div className="fixed inset-0 pointer-events-none z-0" aria-hidden>
+          <div className="absolute inset-0">
+            <div style={{ position:'absolute', top:'-10%', left:'-5%', width:'65vw', height:'65vw', borderRadius:'50%', background:'radial-gradient(circle at 38% 38%, #7C5CFF 0%, #6C47FF 25%, #4B2ECC 55%, transparent 72%)', filter:'blur(80px)', opacity:0.45 }} />
+            <div style={{ position:'absolute', top:'18%', right:'-12%', width:'52vw', height:'52vw', borderRadius:'50%', background:'radial-gradient(circle at 50% 45%, #8B6FFF 0%, #5A38F5 30%, #3D25CC 60%, transparent 75%)', filter:'blur(90px)', opacity:0.35 }} />
+            <div style={{ position:'absolute', bottom:'-15%', left:'22%', width:'58vw', height:'58vw', borderRadius:'50%', background:'radial-gradient(circle at 50% 50%, #5A38F5 0%, #4B2ECC 35%, #2D1C99 65%, transparent 75%)', filter:'blur(100px)', opacity:0.38 }} />
+          </div>
+          <div style={{ position:'absolute', inset:0, backdropFilter:'blur(72px)', WebkitBackdropFilter:'blur(72px)' }} />
+          <div style={{ position:'absolute', inset:0, background:'rgba(10,10,20,0.62)' }} />
+        </div>
+        <Navbar visible onComparePlans={handleComparePlans} onAllFeatures={handleAllFunctionsBack} onLogoClick={handleAllFunctionsBack} />
+        <div className="relative z-10">
+          <AllFunctionsPage />
+        </div>
+      </>
+    )
+  }
+
   if (showCompare && !checkoutPlan) {
     return (
       <>
@@ -126,7 +180,7 @@ export default function App() {
           <div style={{ position:'absolute', inset:0, backdropFilter:'blur(72px)', WebkitBackdropFilter:'blur(72px)' }} />
           <div style={{ position:'absolute', inset:0, background:'rgba(10,10,20,0.62)' }} />
         </div>
-        <Navbar visible onComparePlans={handleCompareBack} onLogoClick={handleCompareBack} />
+        <Navbar visible onComparePlans={handleCompareBack} onAllFeatures={handleShowAllFunctions} onLogoClick={handleCompareBack} />
         <div className="relative z-10">
           <ComparePlans
             onBack={handleCompareBack}
@@ -224,7 +278,7 @@ export default function App() {
 
       </div>
 
-      <Navbar visible={splashDone} onComparePlans={handleComparePlans} />
+      <Navbar visible={splashDone} onComparePlans={handleComparePlans} onAllFeatures={handleShowAllFunctions} />
 
       <div
         className="min-h-screen relative z-10"

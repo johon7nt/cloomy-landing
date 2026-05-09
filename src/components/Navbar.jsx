@@ -3,7 +3,13 @@ import Logo from './Logo'
 
 const NAV_LINKS = [
   { label: 'Casos de uso',         href: '#features'    },
-  { label: 'Funciones',            href: '#all-features' },
+  {
+    label: 'Funciones',            href: '#all-features',
+    submenu: [
+      { label: 'Casos de uso',          href: '#features'     },
+      { label: 'Todas las funciones',   action: 'allfeatures' },
+    ],
+  },
   {
     label: 'Planes',               href: '#pricing',
     submenu: [
@@ -38,11 +44,11 @@ function scrollTo(href) {
   }
 }
 
-export default function Navbar({ visible = true, onComparePlans, onLogoClick }) {
+export default function Navbar({ visible = true, onComparePlans, onAllFeatures, onLogoClick }) {
   const [scrolled,  setScrolled]  = useState(false)
   const [menuOpen,  setMenuOpen]  = useState(false)
-  const [dropOpen,  setDropOpen]  = useState(false)
-  const dropRef = useRef(null)
+  const [dropOpen,  setDropOpen]  = useState(null)   // null | link.href
+  const navRef = useRef(null)
 
   useEffect(() => {
     const onScroll = () => {
@@ -53,10 +59,10 @@ export default function Navbar({ visible = true, onComparePlans, onLogoClick }) 
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close dropdown when clicking outside
+  // Close any open dropdown when clicking outside the nav
   useEffect(() => {
     const handler = (e) => {
-      if (dropRef.current && !dropRef.current.contains(e.target)) setDropOpen(false)
+      if (navRef.current && !navRef.current.contains(e.target)) setDropOpen(null)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
@@ -64,7 +70,7 @@ export default function Navbar({ visible = true, onComparePlans, onLogoClick }) 
 
   const handleLink = (e, href) => {
     e.preventDefault()
-    setDropOpen(false)
+    setDropOpen(null)
     if (menuOpen) {
       setMenuOpen(false)
       setTimeout(() => scrollTo(href), 370)
@@ -74,9 +80,10 @@ export default function Navbar({ visible = true, onComparePlans, onLogoClick }) 
   }
 
   const handleAction = (action) => {
-    setDropOpen(false)
+    setDropOpen(null)
     setMenuOpen(false)
-    if (action === 'compare') onComparePlans?.()
+    if (action === 'compare')      onComparePlans?.()
+    if (action === 'allfeatures')  onAllFeatures?.()
   }
 
   return (
@@ -105,23 +112,22 @@ export default function Navbar({ visible = true, onComparePlans, onLogoClick }) 
             </a>
           )}
 
-          <nav className="hidden lg:flex items-center gap-6">
+          <nav ref={navRef} className="hidden lg:flex items-center gap-6">
             {NAV_LINKS.map((link) =>
               link.submenu ? (
                 /* ── Dropdown item ── */
                 <div
                   key={link.href}
-                  ref={dropRef}
                   className="relative"
                 >
                   <button
-                    onClick={() => setDropOpen(v => !v)}
+                    onClick={() => setDropOpen(v => v === link.href ? null : link.href)}
                     className="relative group flex items-center gap-1 text-text-secondary hover:text-white transition-colors duration-200 text-sm font-medium py-1"
                   >
                     {link.label}
                     <svg
                       className="w-3.5 h-3.5 transition-transform duration-200"
-                      style={{ transform: dropOpen ? 'rotate(180deg)' : 'none', color: 'currentColor' }}
+                      style={{ transform: dropOpen === link.href ? 'rotate(180deg)' : 'none', color: 'currentColor' }}
                       fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -134,15 +140,15 @@ export default function Navbar({ visible = true, onComparePlans, onLogoClick }) 
 
                   {/* Dropdown panel */}
                   <div
-                    className="absolute top-full mt-2 w-44 rounded-xl overflow-hidden"
+                    className="absolute top-full mt-2 w-48 rounded-xl overflow-hidden"
                     style={{
                       left: '50%',
                       background: 'rgba(10,10,20,0.95)',
                       border: '1px solid rgba(108,71,255,0.25)',
                       boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(108,71,255,0.1)',
-                      opacity: dropOpen ? 1 : 0,
-                      transform: dropOpen ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-6px)',
-                      pointerEvents: dropOpen ? 'auto' : 'none',
+                      opacity: dropOpen === link.href ? 1 : 0,
+                      transform: dropOpen === link.href ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-6px)',
+                      pointerEvents: dropOpen === link.href ? 'auto' : 'none',
                       transition: 'opacity 0.18s ease, transform 0.18s ease',
                     }}
                   >
